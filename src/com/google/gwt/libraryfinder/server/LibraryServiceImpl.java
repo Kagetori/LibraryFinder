@@ -38,6 +38,7 @@ public class LibraryServiceImpl extends RemoteServiceServlet implements LibraryS
 	//EFFECTS: store a list of libraries to web server using PersistenceManager
 	private void storeLibraries() {
 		// TODO Auto-generated method stub
+		// TODO pop-up window (with OK button) informing user libraries are loaded
 
 	}
 
