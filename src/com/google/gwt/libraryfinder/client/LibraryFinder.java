@@ -15,11 +15,13 @@ import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.datepicker.client.DatePicker;
 import com.google.gwt.libraryfinder.shared.Library;
 import com.google.gwt.maps.client.MapWidget;				//Y
 import com.google.gwt.maps.client.geom.LatLng;				//Y
@@ -37,11 +39,19 @@ public class LibraryFinder implements EntryPoint {
 	
 	private final LibraryServiceAsync libraryService = GWT
 			.create(LibraryService.class);
+	
+	private VerticalPanel topPanel = new VerticalPanel();
+	private VerticalPanel bottomPanel = new VerticalPanel();
+	private Button loadDataButton = new Button("Load Data");
+	
+	//Placeholder widgets for map and table 
+	private DatePicker libraryFinderMap = new DatePicker();
+	private FlexTable libraryFinderTable = new FlexTable();
+	
 	/**
 	 * Entry point method.
 	 */
 	public void onModuleLoad() {
-		//TODO: layout of web page 
 		loadLibraryFinder();
 	}
 
@@ -49,13 +59,6 @@ public class LibraryFinder implements EntryPoint {
 	//MODIFIES: view
 	//EFFECTS: add widgets onto panels and organize panels on webpage
 	private void loadLibraryFinder() {
-		// TODO load webpage and widgets
-		// TODO add map widget to "the" panel
-		//mainPanel.add(map);	//Y
-		// TODO add table widget to panel
-		// TODO link load data button to parser 
-			// on click 
-		loadLibraries();
 		
 		//TODO query library data from server 
 		queryLibrariesFromServer();
@@ -65,7 +68,29 @@ public class LibraryFinder implements EntryPoint {
 		
 		//TODO make table
 		displayTable();
+		//Make fake table (delete when you get actual table)
+		libraryFinderTable.setText(0, 0, "Symbol");
+		libraryFinderTable.setText(0, 1, "Price");
+		libraryFinderTable.setText(1, 0, "Random");
+		libraryFinderTable.setText(1, 1, "Test");
 		
+		//Assemble top panel
+		topPanel.add(map); //adds map widget
+		topPanel.add(loadDataButton);
+		
+		//Assemble bottom panel
+		bottomPanel.add(libraryFinderTable); //adds table widget
+		
+		//Associate panels with html page
+		RootPanel.get("libraryFinderMap").add(topPanel);
+		RootPanel.get("libraryFinderTable").add(bottomPanel);
+		
+		//Link load data button to parser 
+		loadDataButton.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				loadLibraries();
+			}
+		});
 	}
 	
 	// REQUIRES: nothing
