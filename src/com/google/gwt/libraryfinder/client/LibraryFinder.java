@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.libraryfinder.shared.FieldVerifier;
+import com.google.gwt.libraryfinder.shared.LatLon;			//Y
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -20,11 +21,17 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.libraryfinder.shared.Library;
+import com.google.gwt.maps.client.MapWidget;				//Y
+import com.google.gwt.maps.client.geom.LatLng;				//Y
+import com.google.gwt.maps.client.control.LargeMapControl;	//Y
+import com.google.gwt.maps.client.overlay.Marker;			//Y
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class LibraryFinder implements EntryPoint {
+	LatLng latLngInVancouver = LatLng.newInstance(49.2827, 123.1207);	//Y
+	private MapWidget map = new MapWidget(latLngInVancouver, 10);		//Y
 	
 	private List<Library> libraries = new ArrayList<Library>();
 	
@@ -44,6 +51,7 @@ public class LibraryFinder implements EntryPoint {
 	private void loadLibraryFinder() {
 		// TODO load webpage and widgets
 		// TODO add map widget to "the" panel
+		//mainPanel.add(map);	//Y
 		// TODO add table widget to panel
 		// TODO link load data button to parser 
 			// on click 
@@ -71,9 +79,15 @@ public class LibraryFinder implements EntryPoint {
 	// REQUIRES: list of libraries
 	// MODIFIES: nothing
 	// EFFECTS: display, centralize, put icons on map
-	private void displayMap() {
-		// TODO Auto-generated method stub
-		
+	private void displayMap() {	//Y
+		map.setSize("500px", "500px");
+		map.addControl(new LargeMapControl());
+		for (Library l: libraries) {
+			LatLon latLon = l.getLatLon();
+			LatLng latLng = LatLng.newInstance(latLon.getLat(), latLon.getLon());
+			Marker marker = new Marker(latLng);	//final
+			map.addOverlay(marker);
+		}
 	}
 	
 	// REQUIRES: list of libraries
