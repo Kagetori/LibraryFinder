@@ -32,8 +32,8 @@ import com.google.gwt.maps.client.overlay.Marker;			//Y
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class LibraryFinder implements EntryPoint {
-	LatLng latLngInVancouver = LatLng.newInstance(49.2827, 123.1207);	//Y
-	private MapWidget map = new MapWidget(latLngInVancouver, 10);		//Y
+	//LatLng latLngInVancouver = LatLng.newInstance(49.2827, 123.1207);	//Y
+	//private MapWidget map = new MapWidget(latLngInVancouver, 10);		//Y
 	
 	private List<Library> libraries = new ArrayList<Library>();
 	
@@ -75,7 +75,7 @@ public class LibraryFinder implements EntryPoint {
 		libraryFinderTable.setText(1, 1, "Test");
 		
 		//Assemble top panel
-		topPanel.add(map); //adds map widget
+		topPanel.add(libraryFinderMap); //adds map widget
 		topPanel.add(loadDataButton);
 		
 		//Assemble bottom panel
@@ -105,14 +105,14 @@ public class LibraryFinder implements EntryPoint {
 	// MODIFIES: nothing
 	// EFFECTS: display, centralize, put icons on map
 	private void displayMap() {	//Y
-		map.setSize("500px", "500px");
-		map.addControl(new LargeMapControl());
-		for (Library l: libraries) {
-			LatLon latLon = l.getLatLon();
-			LatLng latLng = LatLng.newInstance(latLon.getLat(), latLon.getLon());
-			Marker marker = new Marker(latLng);	//final
-			map.addOverlay(marker);
-		}
+//		map.setSize("500px", "500px");
+//		map.addControl(new LargeMapControl());
+//		for (Library l: libraries) {
+//			LatLon latLon = l.getLatLon();
+//			LatLng latLng = LatLng.newInstance(latLon.getLat(), latLon.getLon());
+//			Marker marker = new Marker(latLng);	//final
+//			map.addOverlay(marker);
+//		}
 	}
 	
 	// REQUIRES: list of libraries
