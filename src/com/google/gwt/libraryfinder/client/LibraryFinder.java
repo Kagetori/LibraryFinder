@@ -14,27 +14,46 @@ import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.datepicker.client.DatePicker;
 import com.google.gwt.libraryfinder.shared.Library;
+import com.google.gwt.libraryfinder.shared.LatLon;			//Y
+import com.google.gwt.maps.client.MapWidget;				//Y
+import com.google.gwt.maps.client.geom.LatLng;				//Y
+import com.google.gwt.maps.client.control.LargeMapControl;	//Y
+import com.google.gwt.maps.client.overlay.Marker;			//Y
+import com.google.gwt.user.cellview.client.CellTable;		//Y
+import com.google.gwt.user.cellview.client.Column;			//Y
+import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;	//Y
+import com.google.gwt.user.cellview.client.TextColumn;		//Y
+import com.google.gwt.cell.client.ButtonCell;				//Y
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class LibraryFinder implements EntryPoint {
+	LatLng latLngInVancouver = LatLng.newInstance(49.2827, -123.1207);				//Y
+	private MapWidget libraryFinderMap = new MapWidget(latLngInVancouver, 11);		//Y
+	CellTable<Library> libraryFinderTable = new CellTable<Library>();							//Y
 	
 	private List<Library> libraries = new ArrayList<Library>();
 	
 	private final LibraryServiceAsync libraryService = GWT
 			.create(LibraryService.class);
+	
+	private VerticalPanel topPanel = new VerticalPanel();
+	private VerticalPanel bottomPanel = new VerticalPanel();
+	private Button loadDataButton = new Button("Load Data");
+	
 	/**
 	 * Entry point method.
 	 */
 	public void onModuleLoad() {
-		//TODO: layout of web page 
 		loadLibraryFinder();
 	}
 
@@ -42,12 +61,6 @@ public class LibraryFinder implements EntryPoint {
 	//MODIFIES: view
 	//EFFECTS: add widgets onto panels and organize panels on webpage
 	private void loadLibraryFinder() {
-		// TODO load webpage and widgets
-		// TODO add map widget to "the" panel
-		// TODO add table widget to panel
-		// TODO link load data button to parser 
-			// on click 
-		loadLibraries();
 		
 		//TODO query library data from server 
 		queryLibrariesFromServer();
@@ -58,6 +71,23 @@ public class LibraryFinder implements EntryPoint {
 		//TODO make table
 		displayTable();
 		
+		//Assemble top panel
+		topPanel.add(libraryFinderMap); //adds map widget	//Y
+		topPanel.add(loadDataButton);
+		
+		//Assemble bottom panel
+		bottomPanel.add(libraryFinderTable); //adds table widget
+		
+		//Associate panels with html page
+		RootPanel.get("libraryFinderMap").add(topPanel);
+		RootPanel.get("libraryFinderTable").add(bottomPanel);
+		
+		//Link load data button to parser 
+		loadDataButton.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				loadLibraries();
+			}
+		});
 	}
 	
 	// REQUIRES: nothing
@@ -71,17 +101,76 @@ public class LibraryFinder implements EntryPoint {
 	// REQUIRES: list of libraries
 	// MODIFIES: nothing
 	// EFFECTS: display, centralize, put icons on map
-	private void displayMap() {
-		// TODO Auto-generated method stub
+	private void displayMap() {	//Y
 		
+		libraryFinderMap.setSize("500px", "500px");
+		libraryFinderMap.addControl(new LargeMapControl());
+		//test
+		LatLon ll1 = new LatLon(49.274931, -123.070318);
+		LatLon ll2 = new LatLon(49.281272, -123.099827);
+		Library l1 = new Library("Britannia", "Vancouver", "1661 Napier", "V5L 4X4", "(604) 665-2222", ll1);
+		Library l2 = new Library("Carnegie", "Vancouver", "401 Main Street", "V6A 2T7", "(604) 665-3010", ll2);
+		libraries.add(l1);
+		libraries.add(l2);
+		//
+		for (Library l: libraries) {
+			LatLon latLon = l.getLatLon();
+			LatLng latLng = LatLng.newInstance(latLon.getLat(), latLon.getLon());
+			Marker marker = new Marker(latLng);	//final
+			libraryFinderMap.addOverlay(marker);
+		}
 	}
 	
 	// REQUIRES: list of libraries
 	// MODIFIES: nothing
 	// EFFECTS: put in headings and library information into the table
-	private void displayTable() {
-		// TODO Auto-generated method stub
-		
+	private void displayTable() {	//Y
+//		table.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
+		TextColumn<Library> nameColumn = new TextColumn<Library>() {
+			@Override
+			public String getValue(Library object) {
+				return object.getName();
+			}
+		};
+		libraryFinderTable.addColumn(nameColumn, "Branch Name");
+		TextColumn<Library> phoneColumn = new TextColumn<Library>() {
+			@Override
+			public String getValue(Library object) {
+				return object.getPhone();
+			}
+		};
+		libraryFinderTable.addColumn(phoneColumn, "Phone");
+		TextColumn<Library> addressColumn = new TextColumn<Library>() {
+			@Override
+			public String getValue(Library object) {
+				return object.getAddress();
+			}
+		};
+		libraryFinderTable.addColumn(addressColumn, "Address");
+		TextColumn<Library> cityColumn = new TextColumn<Library>() {
+			@Override
+			public String getValue(Library object) {
+				return object.getCity();
+			}
+		};
+		libraryFinderTable.addColumn(cityColumn, "City");
+		TextColumn<Library> postalCodeColumn = new TextColumn<Library>() {
+			@Override
+			public String getValue(Library object) {
+				return object.getPostalCode();
+			}
+		};
+		libraryFinderTable.addColumn(postalCodeColumn, "Postal Code");
+		ButtonCell favouriteButton = new ButtonCell();
+		Column buttonColumn = new Column<Library, String>(favouriteButton) {
+			@Override
+			public String getValue(Library object) {
+				return "+";
+			}
+		};
+		libraryFinderTable.addColumn(buttonColumn, "Add To Favourite");
+		libraryFinderTable.setRowCount(libraries.size(), true);
+		libraryFinderTable.setRowData(0,libraries);
 	}
 
 	//call LibraryServiceAsync class -> call LibraryServiceImpl
