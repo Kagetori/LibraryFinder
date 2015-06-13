@@ -8,6 +8,7 @@ import org.json.JSONException;
 
 import com.google.gwt.libraryfinder.client.LibraryService;
 import com.google.gwt.libraryfinder.shared.Library;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class LibraryServiceImpl extends RemoteServiceServlet implements LibraryService {
@@ -51,8 +52,10 @@ public class LibraryServiceImpl extends RemoteServiceServlet implements LibraryS
 	//MODIFIES: nothing
 	//EFFECTS: store a list of libraries to web server using PersistenceManager
 	private void storeLibraries() {
-		// TODO Auto-generated method stub
-		// TODO pop-up window (with OK button) informing user libraries are loaded
+		Window.alert("in storeLibraries");
+		// TODO pop-up window (with OK button->built-in) informing user libraries are loaded
+		// 		Elaine says: might not need pop-up window here, already made one in LibraryFinder.loadLibraries
+		//		since it has to do something on success, so might as well implement this window there!
 
 	}
 

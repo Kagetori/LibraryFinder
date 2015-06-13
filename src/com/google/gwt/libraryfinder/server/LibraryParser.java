@@ -37,39 +37,39 @@ public class LibraryParser {
     //EFFECTS: parses the string from the URL to create a new library, adds it to a list
 	//			of libraries, and return that list
 	public List<Library> parse(String returnString) throws JSONException {
-		System.out.println(returnString);
+		//System.out.println(returnString);
 		int num = 0;
 		String s = "";
 		List<Library> libraries = new ArrayList<Library>();
 		JSONObject object = new JSONObject(returnString);
 		JSONObject result = object.getJSONObject("result");
-		System.out.println("parsed result");
+		//System.out.println("parsed result");
 		JSONArray records = result.getJSONArray("records");
-		System.out.println("parsed records");
+		//System.out.println("parsed records");
 		int size = records.length();
 		for (int i=0; i < size; i++) {
 			JSONObject library = records.getJSONObject(i);
 			String city = library.getString("City");
-			System.out.println(city);
+			//System.out.println(city);
 			String name = library.getString("Branch or Service Point Name");
-			System.out.println(name);
+			//System.out.println(name);
 			String phone = library.getString("Phone");
-			System.out.println(phone);
+			//System.out.println(phone);
 			String postalCode = library.getString("Postal Code");
-			System.out.println("parsed postalCode");
+			//System.out.println("parsed postalCode");
 			String address = library.getString("Physical Address");
-			System.out.println("parsed address");
+			//System.out.println("parsed address");
 			Double lat = library.getDouble("Latitude");
-			System.out.println("parsed lat");
+			//System.out.println("parsed lat");
 			Double lon = library.getDouble("Longitude");
-			System.out.println("parsed lon");
+			//System.out.println("parsed lon");
 			LatLon latLon = new LatLon(lat, lon);
 			Library newLibrary = new Library(name, city, address, postalCode, phone, latLon);
 			num++;
 			s = Integer.toString(num);
-			System.out.println(s + "libraries created");
+			//System.out.println(s + "libraries created");
 			libraries.add(newLibrary);
-			System.out.println(s + "libraries added to library list");
+			//System.out.println(s + "libraries added to library list");
 		}
 		
 		return libraries;

@@ -11,6 +11,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -179,8 +180,16 @@ public class LibraryFinder implements EntryPoint {
 	//EFFECTS: call a method in LibraryServiceImpl that queries, parses 
 	//			and stores a list of libraries
 	private void loadLibraries() {
-		// TODO Auto-generated method stub
-		
+		libraryService.getLibraries(new AsyncCallback<Void>() {
+			public void onFailure(Throwable error) {
+				//Window.alert(error.getMessage());
+				Window.alert("getLibraries failed, storeLibraries awaits to be implemented");
+			}
+
+			public void onSuccess(Void ignore) {
+				Window.alert("248 libraries have been loaded in persistent store.");
+			}
+		});
 	}
 	
 	
