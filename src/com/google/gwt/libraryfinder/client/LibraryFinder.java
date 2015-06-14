@@ -44,8 +44,7 @@ public class LibraryFinder implements EntryPoint {
 	
 	private List<Library> libraries = new ArrayList<Library>();
 	
-	private final LibraryServiceAsync libraryService = GWT
-			.create(LibraryService.class);
+	private final LibraryServiceAsync libraryService = GWT.create(LibraryService.class);
 	
 	private VerticalPanel topPanel = new VerticalPanel();
 	private VerticalPanel bottomPanel = new VerticalPanel();
@@ -65,11 +64,8 @@ public class LibraryFinder implements EntryPoint {
 		
 		//TODO query library data from server 
 		queryLibrariesFromServer();
-		
-		//TODO make map
+
 		displayMap();
-		
-		//TODO make table
 		displayTable();
 		
 		//Assemble top panel
@@ -86,7 +82,7 @@ public class LibraryFinder implements EntryPoint {
 		//Link load data button to parser 
 		loadDataButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				loadLibraries();
+					loadLibraries();
 			}
 		});
 	}
@@ -180,14 +176,15 @@ public class LibraryFinder implements EntryPoint {
 	//EFFECTS: call a method in LibraryServiceImpl that queries, parses 
 	//			and stores a list of libraries
 	private void loadLibraries() {
+		Window.alert("in loadLibraries");
 		libraryService.getLibraries(new AsyncCallback<Void>() {
 			public void onFailure(Throwable error) {
 				//Window.alert(error.getMessage());
-				Window.alert("getLibraries failed, storeLibraries awaits to be implemented");
+				Window.alert("getLibraries failed!");
 			}
 
 			public void onSuccess(Void ignore) {
-				Window.alert("248 libraries have been loaded in persistent store.");
+				Window.alert("Libraries have been loaded in persistent store.");
 			}
 		});
 	}
