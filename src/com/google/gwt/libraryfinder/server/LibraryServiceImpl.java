@@ -19,9 +19,11 @@ public class LibraryServiceImpl extends RemoteServiceServlet implements LibraryS
 
 	private List<Library> libraries = new ArrayList<Library>();
 	private LibraryParser libraryParser = new LibraryParser();
+	
+	private static final PersistenceManagerFactory PMF = 
+			JDOHelper.getPersistenceManagerFactory("transactions-optional");
 
 	public void getLibraries() {
-		System.out.println("finally got to getLibraries!");
 		String jsonString = queryLibrariesFromRemote(); //might take in URL string
 		parseLibraries(jsonString);
 		storeLibraries();
@@ -57,22 +59,11 @@ public class LibraryServiceImpl extends RemoteServiceServlet implements LibraryS
 	//MODIFIES: nothing
 	//EFFECTS: store a list of libraries to web server using PersistenceManager
 	private void storeLibraries() {
-		System.out.println("in storeLibraries");
-		// TODO pop-up window (with OK button->built-in) informing user libraries are loaded
-		// 		Elaine says: might not need pop-up window here, already made one in LibraryFinder.loadLibraries
-		//		since it has to do something on success, so might as well implement this window there!
-		
-		LatLon ll1 = new LatLon(49.274931, -123.070318);
-		LatLon ll2 = new LatLon(49.281272, -123.099827);
-		Library l1 = new Library("Britannia", "Vancouver", "1661 Napier", "V5L 4X4", "(604) 665-2222", ll1);
-		Library l2 = new Library("Carnegie", "Vancouver", "401 Main Street", "V6A 2T7", "(604) 665-3010", ll2);
-
-		PersistenceManagerFactory PMF = JDOHelper.getPersistenceManagerFactory("transactions-optional");
+	
 		PersistenceManager pm = PMF.getPersistenceManager();
 		
 		try {
-			//pm.makePersistentAll(libraries);
-			pm.makePersistent(l1);
+			pm.makePersistentAll(libraries);
 		} catch (Exception e) {
 			System.out.println("There was an error storing the libraries!");
 		}

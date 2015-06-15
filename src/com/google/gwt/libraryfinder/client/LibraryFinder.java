@@ -180,11 +180,11 @@ public class LibraryFinder implements EntryPoint {
 		libraryService.getLibraries(new AsyncCallback<Void>() {
 			public void onFailure(Throwable error) {
 				//Window.alert(error.getMessage());
-				Window.alert("getLibraries failed!");
+				Window.alert("Failed to load libraries!");
 			}
 
 			public void onSuccess(Void ignore) {
-				Window.alert("Libraries have been loaded in persistent store.");
+				Window.alert("Libraries have been loaded!");
 			}
 		});
 	}

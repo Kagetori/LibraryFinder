@@ -1,7 +1,9 @@
 package com.google.gwt.libraryfinder.shared;
 
+import javax.jdo.annotations.Embedded;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
@@ -11,7 +13,7 @@ public class Library {
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Long id;
+	private Long id; //if keeping, copy over the getId method
 	@Persistent
 	private String name;
 	@Persistent
@@ -22,7 +24,8 @@ public class Library {
 	private String postalCode;
 	@Persistent
 	private String phone;
-	@Persistent
+	@Persistent 	
+	@Embedded
 	private LatLon latLon;
 	
 	public Library(String name, String city, String address, String postalCode, String phone, LatLon latLon) {
