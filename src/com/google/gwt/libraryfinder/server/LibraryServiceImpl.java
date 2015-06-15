@@ -11,6 +11,8 @@ import com.google.gwt.libraryfinder.shared.Library;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
+import java.io.Serializable;
+
 public class LibraryServiceImpl extends RemoteServiceServlet implements LibraryService {
 
 	private List<Library> libraries = new ArrayList<Library>();
@@ -19,7 +21,7 @@ public class LibraryServiceImpl extends RemoteServiceServlet implements LibraryS
 	public void getLibraries() {
 		String jsonString = queryLibrariesFromRemote(); //might take in URL string
 		parseLibraries(jsonString);
-		storeLibraries();
+		//storeLibraries();
 	}
 
 	//REQUIRES: valid Http URL string
@@ -52,7 +54,6 @@ public class LibraryServiceImpl extends RemoteServiceServlet implements LibraryS
 	//MODIFIES: nothing
 	//EFFECTS: store a list of libraries to web server using PersistenceManager
 	private void storeLibraries() {
-		Window.alert("in storeLibraries");
 		// TODO pop-up window (with OK button->built-in) informing user libraries are loaded
 		// 		Elaine says: might not need pop-up window here, already made one in LibraryFinder.loadLibraries
 		//		since it has to do something on success, so might as well implement this window there!
