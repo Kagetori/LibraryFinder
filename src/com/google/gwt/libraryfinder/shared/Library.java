@@ -1,5 +1,7 @@
 package com.google.gwt.libraryfinder.shared;
 
+import java.io.Serializable;
+
 import javax.jdo.annotations.Embedded;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -8,8 +10,10 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class Library {
+public class Library implements IsSerializable {
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -27,6 +31,8 @@ public class Library {
 	@Persistent 	
 	@Embedded
 	private LatLon latLon;
+	
+	public Library() {}
 	
 	public Library(String name, String city, String address, String postalCode, String phone, LatLon latLon) {
 		this.name = name;

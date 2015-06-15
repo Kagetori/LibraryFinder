@@ -1,5 +1,7 @@
 package com.google.gwt.libraryfinder.shared;
 
+import java.io.Serializable;
+
 import javax.jdo.annotations.EmbeddedOnly;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -7,8 +9,10 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-@PersistenceCapable(identityType = IdentityType.APPLICATION) //@EmbeddedOnly
-public class LatLon {
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+@PersistenceCapable(identityType = IdentityType.APPLICATION) 
+public class LatLon implements IsSerializable {
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -17,6 +21,8 @@ public class LatLon {
 	private double lat;
 	@Persistent
 	private double lon;
+	
+	public LatLon() {}
 	
 	public LatLon(double lat, double lon) {	
 		this.lat = lat;
