@@ -1,14 +1,38 @@
 package com.google.gwt.libraryfinder.shared;
 
+import java.io.Serializable;
 
-public class Library {
+import javax.jdo.annotations.Embedded;
+import javax.jdo.annotations.IdGeneratorStrategy;
+import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.NotPersistent;
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.PrimaryKey;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+@PersistenceCapable(identityType = IdentityType.APPLICATION)
+public class Library implements IsSerializable {
+
+	@PrimaryKey
+	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+	private Long id; //if keeping, copy over the getId method
+	@Persistent
 	private String name;
+	@Persistent
 	private String city;
+	@Persistent
 	private String address;
+	@Persistent
 	private String postalCode;
+	@Persistent
 	private String phone;
+	@Persistent 	
+	@Embedded
 	private LatLon latLon;
+	
+	public Library() {}
 	
 	public Library(String name, String city, String address, String postalCode, String phone, LatLon latLon) {
 		this.name = name;
