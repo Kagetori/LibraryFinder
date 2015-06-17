@@ -114,7 +114,7 @@ public class LibraryFinder implements EntryPoint {
 	// EFFECTS: display, centralize, put icons on map
 	private void displayMap() {	
 		
-		libraryFinderMap.setSize("500px", "500px");
+		libraryFinderMap.setSize("1000px", "600px");
 		libraryFinderMap.addControl(new LargeMapControl());
 		
 	}
