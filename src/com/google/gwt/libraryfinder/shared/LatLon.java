@@ -24,6 +24,10 @@ public class LatLon implements IsSerializable {
 	
 	public LatLon() {}
 	
+	public Long getId() {
+		return id;
+	}
+	
 	public LatLon(double lat, double lon) {	
 		this.lat = lat;
 		this.lon = lon;

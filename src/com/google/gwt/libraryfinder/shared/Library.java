@@ -17,7 +17,7 @@ public class Library implements IsSerializable {
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Long id; //if keeping, copy over the getId method
+	private Long id; 
 	@Persistent
 	private String name;
 	@Persistent
@@ -41,6 +41,10 @@ public class Library implements IsSerializable {
 		this.postalCode = postalCode;
 		this.phone = phone;
 		this.latLon = latLon;
+	}
+	
+	public Long getId() {
+		return id;
 	}
 	
 	public String getName() {

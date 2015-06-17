@@ -88,17 +88,16 @@ public class LibraryFinder implements EntryPoint {
 	// MODIFIES: this
 	// EFFECTS: get libraries from server and add to the list of libraries
 	private void queryLibrariesFromServer() {
-		Window.alert("Got to queryLibrariesFromServer");
 		libraryService.retrieveLibraries(new AsyncCallback<List<Library>>() {
 
 			//@Override
 			public void onFailure(Throwable caught) {
-				//Window.alert(caught.getMessage());
+				Window.alert("Querying libraries from server was not successful!");
 			}
 
 			//@Override
 			public void onSuccess(List<Library> result) {
-				Window.alert("On success method. Library list size: " + result.size());
+				Window.alert("Number of libraries found: " + result.size());
 				libraries = result;
 				
 				populateMap();
@@ -187,7 +186,6 @@ public class LibraryFinder implements EntryPoint {
 	//EFFECTS: call a method in LibraryServiceImpl that queries, parses 
 	//			and stores a list of libraries
 	private void loadLibraries() {
-		Window.alert("in loadLibraries");
 		libraryService.getLibraries(new AsyncCallback<Void>() {
 			public void onFailure(Throwable error) {
 				Window.alert("Failed to load libraries!");
@@ -195,6 +193,7 @@ public class LibraryFinder implements EntryPoint {
 
 			public void onSuccess(Void ignore) {
 				Window.alert("Libraries have been loaded!");
+				
 			}
 		});
 	}

@@ -56,8 +56,6 @@ public class LibraryServiceImpl extends RemoteServiceServlet implements LibraryS
 			System.out.println("JSONException caught");
 			e.printStackTrace();
 		}
-		
-		System.out.println("Parsed libraries: " + libraries.size());
 	}
 
 	//REQUIRES: a list of libraries
@@ -68,6 +66,9 @@ public class LibraryServiceImpl extends RemoteServiceServlet implements LibraryS
 		PersistenceManager pm = PMF.getPersistenceManager();
 		
 		try {
+			Query query = pm.newQuery(Library.class);
+			Long number = (Long)query.deletePersistentAll();
+			
 			pm.makePersistentAll(libraries);
 		} catch (Exception e) {
 			System.out.println("There was an error storing the libraries!");
@@ -91,8 +92,6 @@ public class LibraryServiceImpl extends RemoteServiceServlet implements LibraryS
 		}
 		
 		extent.closeAll();
-		
-		System.out.println("Retrieved libraries: " + listLibraries.size());
 		
 		return listLibraries;
 	}
