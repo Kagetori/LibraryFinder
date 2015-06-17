@@ -176,6 +176,7 @@ public class LibraryFinder implements EntryPoint {
 			}
 		};
 		libraryFinderTable.addColumn(buttonColumn, "Add To Favourite");
+		libraryFinderTable.setVisibleRange(0, libraries.size());
 		libraryFinderTable.setRowCount(libraries.size(), true);
 		libraryFinderTable.setRowData(0,libraries);
 	}
