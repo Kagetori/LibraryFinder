@@ -94,7 +94,7 @@ public class LibraryFinder implements EntryPoint {
 
 			//@Override
 			public void onFailure(Throwable caught) {
-				Window.alert(caught.getMessage());
+				//Window.alert(caught.getMessage());
 			}
 
 			//@Override
