@@ -193,7 +193,7 @@ public class LibraryFinder implements EntryPoint {
 
 			public void onSuccess(Void ignore) {
 				Window.alert("Libraries have been loaded!");
-				
+				Window.Location.reload();
 			}
 		});
 	}

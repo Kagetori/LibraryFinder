@@ -76,7 +76,6 @@ public class LibraryServiceImpl extends RemoteServiceServlet implements LibraryS
 		finally {
 			pm.close();
 		}
-
 	}
 
 	@Override
