@@ -95,4 +95,21 @@ public class LibraryServiceImpl extends RemoteServiceServlet implements LibraryS
 		return listLibraries;
 	}
 
+	@Override
+	public void deleteLibraries() {
+
+		PersistenceManager pm = PMF.getPersistenceManager();
+
+		try {
+			Query query = pm.newQuery(Library.class);
+			Long number = (Long)query.deletePersistentAll();
+			
+		} catch (Exception e) {
+			System.out.println("There was an error deleting the libraries!");
+		}
+		finally {
+			pm.close();
+		}
+	}
+
 }

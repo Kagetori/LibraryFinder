@@ -49,6 +49,7 @@ public class LibraryFinder implements EntryPoint {
 	private VerticalPanel topPanel = new VerticalPanel();
 	private VerticalPanel bottomPanel = new VerticalPanel();
 	private Button loadDataButton = new Button("Load Data");
+	private Button clearDataButton = new Button("Clear Data");
 	
 	/**
 	 * Entry point method.
@@ -68,6 +69,7 @@ public class LibraryFinder implements EntryPoint {
 		//Assemble top panel
 		topPanel.add(libraryFinderMap); 
 		topPanel.add(loadDataButton);
+		topPanel.add(clearDataButton);
 		
 		//Assemble bottom panel
 		bottomPanel.add(libraryFinderTable); 
@@ -82,8 +84,14 @@ public class LibraryFinder implements EntryPoint {
 					loadLibraries();
 			}
 		});
-	}
-	
+		
+		clearDataButton.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+					clearLibraries();
+			}
+		});
+	}	
+
 	// REQUIRES: nothing
 	// MODIFIES: this
 	// EFFECTS: get libraries from server and add to the list of libraries
@@ -198,5 +206,18 @@ public class LibraryFinder implements EntryPoint {
 		});
 	}
 	
-	
+	//REQUIRES: nothing
+	//MODIFIES: nothing
+	//EFFECTS: clears all saved libraries in server
+	protected void clearLibraries() {
+		libraryService.deleteLibraries(new AsyncCallback<Void>() {
+			public void onFailure(Throwable error) {
+				Window.alert("Failed to clear libraries!");
+			}
+
+			public void onSuccess(Void ignore) {
+				Window.alert("All saved libraries have been deleted!");
+			}
+		});
+	}
 }

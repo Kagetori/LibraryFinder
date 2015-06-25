@@ -9,4 +9,6 @@ public interface LibraryServiceAsync {
 	public void getLibraries(AsyncCallback<Void> async);
 
 	public void retrieveLibraries(AsyncCallback<List<Library>> asyncCallback);
+
+	public void deleteLibraries(AsyncCallback<Void> asyncCallback);
 }

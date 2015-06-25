@@ -10,4 +10,5 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface LibraryService extends RemoteService {
 	public void getLibraries();
 	public List<Library> retrieveLibraries();
+	public void deleteLibraries();
 }
