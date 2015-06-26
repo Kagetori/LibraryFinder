@@ -55,7 +55,16 @@ public class LibraryFinder implements EntryPoint {
 	 * Entry point method.
 	 */
 	public void onModuleLoad() {
+		//implement LoginService Async Callback
+		//includes isLoggedIn and loadLogin
 		loadLibraryFinder();
+	}
+
+	//REQUIRES: nothing
+	//MODIFIES: nothing
+	//EFFECTS: assembles login page
+	private void loadLogin() {
+		//TODO
 	}
 
 	//REQUIRES: nothing
@@ -67,7 +76,18 @@ public class LibraryFinder implements EntryPoint {
 		queryLibrariesFromServer();
 		
 		//Assemble top panel
+		//TODO: make panel for email, logout, facebook
+		//TODO: insert facebook(?) icon
+			//on click calls shareOnSocialMedia
+		//TODO: make panel for filter drop-down menu 
+		displayFilterMenu();
+		
+		//TODO: make favorites table
+		loadFavoritesTable();
+		
 		topPanel.add(libraryFinderMap); 
+		
+		//TODO: can only see these if admin~!
 		topPanel.add(loadDataButton);
 		topPanel.add(clearDataButton);
 		
@@ -91,6 +111,7 @@ public class LibraryFinder implements EntryPoint {
 			}
 		});
 	}	
+
 
 	// REQUIRES: nothing
 	// MODIFIES: this
@@ -131,10 +152,117 @@ public class LibraryFinder implements EntryPoint {
 			LatLon latLon = l.getLatLon();
 			LatLng latLng = LatLng.newInstance(latLon.getLat(), latLon.getLon());
 			Marker marker = new Marker(latLng);	//final
+			//TODO: call getLibraryFromLatLng(LatLng latLng)
+			//TODO: implement method that shows a box with library info when marker is clicked
+			//TODO: add favourite button to box
 			libraryFinderMap.addOverlay(marker);
 		}
+		//get libraries from filter method
+		//re-centralize map
 	}
 	
+	// REQUIRES: LatLng from marker
+	// MODIFIES: nothing
+	// EFFECTS: return a library from searching through global library with latlng
+	private Library getLibraryFromLatLng(LatLng latLng) {
+		//TODOS
+		return null;
+	}
+	
+	// REQUIRES: list of libraries
+	// MODIFIES: nothing
+	// EFFECTS: displays the drop-down filter menu
+	private void displayFilterMenu() {
+		// TODO Auto-generated method stub
+		//get cities from list of libraries
+		//remember show all option
+		//sort by alphabetical order (maybe helper method)
+	}
+	
+	// REQUIRES: nothing
+	// MODIFIES: nothing
+	// EFFECTS: return the city clicked from the filter menu
+	private String getCityFromFilter() {
+		// TODO Auto-generated method stub
+		return null;
+		
+	}
+
+	// REQUIRES: list of libraries (from field) and a city name
+	// MODIFIES: nothing
+	// EFFECTS: returns a list of libraries filtered by city
+	private List<Library> filterLibraries(String city) {
+		// TODO Auto-generated method stub
+		return null;
+		//may call displayMap and populateMap
+		
+	}
+
+	// REQUIRES: nothing
+	// MODIFIES: nothing
+	// EFFECTS: gets list of favorites and display them on success 
+	//(calls displayFavoritesTable)
+	private void loadFavoritesTable() {
+		// TODO Auto-generated method stub
+		//make Async Callback to get list of libraries from server
+
+	}
+
+	// REQUIRES: list of libraries
+	// MODIFIES: nothing
+	// EFFECTS: displays the favorites table
+	private void displayFavoritesTable(List<Library> favoriteLibraries) {
+		// TODO Auto-generated method stub
+		for (Library l: favoriteLibraries) {
+			displayFavorite(l);
+		}
+	}
+
+	// REQUIRES: library
+	// MODIFIES: nothing
+	// EFFECTS: displays the library
+	private void displayFavorite(Library favoriteLibrary) {
+		// TODO Auto-generated method stub
+		//remember to add the "remove" button
+		
+	}
+	
+	// REQUIRES: nothing
+	// MODIFIES: nothing
+	// EFFECTS: checks server for duplicates and calls addFavorite
+	//note: wait for Yuki. Also, may make into checkDuplicate helper method.
+	//Will need to somehow figure out which library we are looking at from table/box in map
+	private void addFavorite() {
+		// TODO Auto-generated method stub
+		//makes Async Callback (get favorites)
+		
+	}
+	
+	// REQUIRES: library
+	// MODIFIES: nothing
+	// EFFECTS: adds the library to the server and calls displayFavorite
+	private void addFavorite(Library favoriteLibrary) {
+		// TODO Auto-generated method stub
+		//makes Async Callback (add favorite)
+	}
+	
+	// REQUIRES: library
+	// MODIFIES: nothing
+	// EFFECTS: removes the library from server
+	private void removeFavorite(Library favoriteLibrary) {
+		// TODO Auto-generated method stub
+		//makes Async Callback (remove favorite)
+		
+	}
+	
+	// REQUIRES: library
+	// MODIFIES: nothing
+	// EFFECTS: removes the library from the local table
+	private void undisplayFavorite(Library favoriteLibrary) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	// REQUIRES: list of libraries
 	// MODIFIES: nothing
 	// EFFECTS: put in headings and library information into the table
@@ -177,6 +305,7 @@ public class LibraryFinder implements EntryPoint {
 		libraryFinderTable.addColumn(postalCodeColumn, "Postal Code");
 		ButtonCell favouriteButton = new ButtonCell();
 		Column buttonColumn = new Column<Library, String>(favouriteButton) {
+			//TODO: link button to add favorite functionality (on click)
 			@Override
 			public String getValue(Library object) {
 				return "+";
@@ -209,7 +338,7 @@ public class LibraryFinder implements EntryPoint {
 	//REQUIRES: nothing
 	//MODIFIES: nothing
 	//EFFECTS: clears all saved libraries in server
-	protected void clearLibraries() {
+	private void clearLibraries() {
 		libraryService.deleteLibraries(new AsyncCallback<Void>() {
 			public void onFailure(Throwable error) {
 				Window.alert("Failed to clear libraries!");
@@ -219,5 +348,12 @@ public class LibraryFinder implements EntryPoint {
 				Window.alert("All saved libraries have been deleted!");
 			}
 		});
+	}
+	
+	//REQUIRES: nothing
+	//MODIFIES: nothing
+	//EFFECTS: shows either a new page or pop-up window so that user can share Library Finder on social media	
+	public void shareOnSocialMedia()  {
+		// TODO: 
 	}
 }
