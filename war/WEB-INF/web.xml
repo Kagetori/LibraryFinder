@@ -16,14 +16,24 @@
     <servlet-class>com.google.gwt.libraryfinder.server.LibraryServiceImpl</servlet-class>
   </servlet>
   
+  <servlet>
+    <servlet-name>loginServlet</servlet-name>
+    <servlet-class>com.google.gwt.libraryfinder.server.LoginServiceImpl</servlet-class>
+  </servlet>
+  
   <servlet-mapping>
     <servlet-name>greetServlet</servlet-name>
     <url-pattern>/libraryfinder/greet</url-pattern>
   </servlet-mapping>
   
-    <servlet-mapping>
+  <servlet-mapping>
     <servlet-name>libraryServlet</servlet-name>
     <url-pattern>/libraryfinder/library</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>loginServlet</servlet-name>
+    <url-pattern>/libraryfinder/login</url-pattern>
   </servlet-mapping>
   
   <!-- Default page to serve -->

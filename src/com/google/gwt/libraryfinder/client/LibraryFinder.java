@@ -14,8 +14,11 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.http.client.URL;
+import com.google.gwt.libraryfinder.client.NotLoggedInException;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -47,6 +50,7 @@ public class LibraryFinder implements EntryPoint {
 	
 	private List<Library> libraries = new ArrayList<Library>();
 	
+	// for library service
 	private final LibraryServiceAsync libraryService = GWT.create(LibraryService.class);
 	
 	private LatLng latLngInVancouver = LatLng.newInstance(49.2827, -123.1207);				//Y
@@ -54,7 +58,7 @@ public class LibraryFinder implements EntryPoint {
 	private CellTable<Library> libraryFinderTable = new CellTable<Library>();							//Y
 	
 	private Label userEmail = new Label("User Email");
-	private Button logoutButton = new Button("Logout");
+	//private Button logoutButton = new Button("Logout");
 	private Button socialLink = new Button("Facebook"); //this is just a placeholder
 	
 	private Label filterTitle = new Label("Search by City");
@@ -73,21 +77,53 @@ public class LibraryFinder implements EntryPoint {
 	private VerticalPanel topPanel = new VerticalPanel();
 	private VerticalPanel bottomPanel = new VerticalPanel();
 	
+	// for login/logout page
+	private LoginInfo loginInfo = null;
+	private VerticalPanel loginPanel = new VerticalPanel();
+	private Label loginLabel = new Label("Please log in to your Google Account to access the LibraryFinder application.");
+	private Anchor loginButton = new Anchor("Log In");
+	private Anchor logoutButton = new Anchor("Log Out");
 	
 	/**
 	 * Entry point method.
 	 */
 	public void onModuleLoad() {
-		//implement LoginService Async Callback
-		//includes isLoggedIn and loadLogin
-		loadLibraryFinder();
+		// Check login status using login service.
+		LoginServiceAsync loginService = GWT.create(LoginService.class);
+		loginService.login(GWT.getHostPageBaseURL(), new AsyncCallback<LoginInfo>() {
+			public void onFailure(Throwable error) {
+				handleError(error);
+			}
+			
+			public void onSuccess(LoginInfo result) {
+				loginInfo = result;
+				if (loginInfo.isLoggedIn()) {
+					loadLibraryFinder();
+				} else {
+					loadLogin();
+				}
+			}
+		});
 	}
 
 	//REQUIRES: nothing
 	//MODIFIES: nothing
 	//EFFECTS: assembles login page
-	private void loadLogin() {
-		//TODO
+	private void loadLogin() {		
+		//Assemble login panel
+		loginPanel.add(loginLabel);
+		loginPanel.add(loginButton);
+		
+		//Associate panel with html page
+		RootPanel.get().add(loginPanel);
+		
+		//Link login button to Google Account Sign-In Page 
+		loginButton.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				loginButton.setHref(loginInfo.getLoginUrl());
+				//Window.Location.assign("https://accounts.google.com");
+			}
+		});
 	}
 
 	//REQUIRES: nothing
@@ -116,6 +152,7 @@ public class LibraryFinder implements EntryPoint {
 		//TODO: make favorites table
 		loadFavoritesTable();
 		
+
 		mapSidePanel.add(filterTitle);
 		mapSidePanel.add(libraryFinderFilter);
 		mapSidePanel.add(favoritesTitle);
@@ -126,6 +163,9 @@ public class LibraryFinder implements EntryPoint {
 		
 		topPanel.add(buttonsPanel);
 		topPanel.add(mapPanel); 
+
+//		topPanel.add(logoutButton);
+
 		
 		//TODO: can only see these if admin~!
 		topPanel.add(loadDataButton);
@@ -148,6 +188,14 @@ public class LibraryFinder implements EntryPoint {
 		clearDataButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 					clearLibraries();
+			}
+		});
+		
+		//Link logout button to Google Account Sign-In Page 
+		logoutButton.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				logoutButton.setHref(loginInfo.getLogoutUrl());
+				//Window.Location.assign("https://accounts.google.com/ServiceLogin?sacu=1&service=mail#identifier");
 			}
 		});
 	}	
@@ -405,7 +453,6 @@ public class LibraryFinder implements EntryPoint {
 		libraryFinderTable.setRowData(0,libraries);
 	}
 
-	//call LibraryServiceAsync class -> call LibraryServiceImpl
 	//REQUIRES: nothing
 	//MODIFIES: nothing
 	//EFFECTS: call a method in LibraryServiceImpl that queries, parses 
@@ -444,4 +491,15 @@ public class LibraryFinder implements EntryPoint {
 	public void shareOnSocialMedia()  {
 		// TODO: 
 	}
+	
+	//REQUIRES: a throwable error
+	//MODIFIES: nothing
+	//EFFECTS: display a pop-up window with error message; if it's a NotLOggedInException replace url of current page with logout url
+	private void handleError(Throwable error) {
+		Window.alert(error.getMessage());
+		if (error instanceof NotLoggedInException) {
+			Window.Location.replace(loginInfo.getLogoutUrl());
+		}
+	}
+	
 }
