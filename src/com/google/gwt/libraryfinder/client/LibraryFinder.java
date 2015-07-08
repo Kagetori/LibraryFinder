@@ -109,7 +109,9 @@ public class LibraryFinder implements EntryPoint {
 	//REQUIRES: nothing
 	//MODIFIES: nothing
 	//EFFECTS: assembles login page
-	private void loadLogin() {		
+	private void loadLogin() {	
+		loginButton.setHref(loginInfo.getLoginUrl());
+		
 		//Assemble login panel
 		loginPanel.add(loginLabel);
 		loginPanel.add(loginButton);
@@ -120,7 +122,7 @@ public class LibraryFinder implements EntryPoint {
 		//Link login button to Google Account Sign-In Page 
 		loginButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				loginButton.setHref(loginInfo.getLoginUrl());
+				
 				//Window.Location.assign("https://accounts.google.com");
 			}
 		});
