@@ -55,6 +55,7 @@ public class LibraryFinder implements EntryPoint {
 	
 	private LatLng latLngInVancouver = LatLng.newInstance(49.2827, -123.1207);				//Y
 	private MapWidget libraryFinderMap = new MapWidget(latLngInVancouver, 11);		//Y
+	private Label libraryFinderTableTitle = new Label("Table of Libraries");
 	private CellTable<Library> libraryFinderTable = new CellTable<Library>();							//Y
 	
 	private Label userEmail = new Label("User Email");
@@ -74,8 +75,7 @@ public class LibraryFinder implements EntryPoint {
 	private HorizontalPanel buttonsPanel = new HorizontalPanel();
 	private HorizontalPanel mapPanel = new HorizontalPanel();
 	private VerticalPanel mapSidePanel = new VerticalPanel();
-	private VerticalPanel topPanel = new VerticalPanel();
-	private VerticalPanel bottomPanel = new VerticalPanel();
+	private VerticalPanel mainPanel = new VerticalPanel();
 	
 	// for login/logout page
 	private LoginInfo loginInfo = null;
@@ -161,22 +161,19 @@ public class LibraryFinder implements EntryPoint {
 		mapPanel.add(libraryFinderMap);
 		mapPanel.add(mapSidePanel);
 		
-		topPanel.add(buttonsPanel);
-		topPanel.add(mapPanel); 
-
-//		topPanel.add(logoutButton);
-
+		mainPanel.add(buttonsPanel);
+		mainPanel.add(mapPanel); 
 		
 		//TODO: can only see these if admin~!
-		topPanel.add(loadDataButton);
-		topPanel.add(clearDataButton);
+		mainPanel.add(loadDataButton);
+		mainPanel.add(clearDataButton);
 		
-		//Assemble bottom panel
-		bottomPanel.add(libraryFinderTable); 
+		//Assemble bottom part of panel
+		mainPanel.add(libraryFinderTableTitle);
+		mainPanel.add(libraryFinderTable); 
 		
 		//Associate panels with html page
-		RootPanel.get("libraryFinderMap").add(topPanel);
-		RootPanel.get("libraryFinderTable").add(bottomPanel);
+		RootPanel.get("libraryFinder").add(mainPanel);
 		
 		//Link load data button to parser 
 		loadDataButton.addClickHandler(new ClickHandler() {
