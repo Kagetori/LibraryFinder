@@ -17,7 +17,10 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -38,18 +41,34 @@ import com.google.gwt.cell.client.ButtonCell;				//Y
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class LibraryFinder implements EntryPoint {
-	LatLng latLngInVancouver = LatLng.newInstance(49.2827, -123.1207);				//Y
-	private MapWidget libraryFinderMap = new MapWidget(latLngInVancouver, 11);		//Y
-	CellTable<Library> libraryFinderTable = new CellTable<Library>();							//Y
 	
 	private List<Library> libraries = new ArrayList<Library>();
 	
 	private final LibraryServiceAsync libraryService = GWT.create(LibraryService.class);
 	
-	private VerticalPanel topPanel = new VerticalPanel();
-	private VerticalPanel bottomPanel = new VerticalPanel();
+	private LatLng latLngInVancouver = LatLng.newInstance(49.2827, -123.1207);				//Y
+	private MapWidget libraryFinderMap = new MapWidget(latLngInVancouver, 11);		//Y
+	private CellTable<Library> libraryFinderTable = new CellTable<Library>();							//Y
+	
+	private Label userEmail = new Label("User Email");
+	private Button logoutButton = new Button("Logout");
+	private Button socialLink = new Button("Facebook"); //this is just a placeholder
+	
+	private Label filterTitle = new Label("Search by City");
+	private ListBox filterMenu = new ListBox();
+	private Label favoritesTitle = new Label("Favorites");
+	private FlexTable favoritesTable = new FlexTable();
+	//private CellTable<Library> favoritesTable = new CellTable<Library>();
+	
 	private Button loadDataButton = new Button("Load Data");
 	private Button clearDataButton = new Button("Clear Data");
+	
+	private HorizontalPanel buttonsPanel = new HorizontalPanel();
+	private HorizontalPanel mapPanel = new HorizontalPanel();
+	private VerticalPanel mapSidePanel = new VerticalPanel();
+	private VerticalPanel topPanel = new VerticalPanel();
+	private VerticalPanel bottomPanel = new VerticalPanel();
+	
 	
 	/**
 	 * Entry point method.
@@ -77,15 +96,32 @@ public class LibraryFinder implements EntryPoint {
 		
 		//Assemble top panel
 		//TODO: make panel for email, logout, facebook
+		
+		buttonsPanel.addStyleName("buttonToRight");
+		
+		buttonsPanel.add(userEmail);
+		buttonsPanel.add(logoutButton);
+		
 		//TODO: insert facebook(?) icon
-			//on click calls shareOnSocialMedia
+		//on click calls shareOnSocialMedia
+		buttonsPanel.add(socialLink); //just a placeholder
+		
 		//TODO: make panel for filter drop-down menu 
 		displayFilterMenu();
 		
 		//TODO: make favorites table
 		loadFavoritesTable();
 		
-		topPanel.add(libraryFinderMap); 
+		mapSidePanel.add(filterTitle);
+		mapSidePanel.add(filterMenu);
+		mapSidePanel.add(favoritesTitle);
+		mapSidePanel.add(favoritesTable);
+		
+		mapPanel.add(libraryFinderMap);
+		mapPanel.add(mapSidePanel);
+		
+		topPanel.add(buttonsPanel);
+		topPanel.add(mapPanel); 
 		
 		//TODO: can only see these if admin~!
 		topPanel.add(loadDataButton);
@@ -177,6 +213,10 @@ public class LibraryFinder implements EntryPoint {
 		//get cities from list of libraries
 		//remember show all option
 		//sort by alphabetical order (maybe helper method)
+		
+		//placeholder
+		filterMenu.addItem("foo");
+		filterMenu.addItem("bar");
 	}
 	
 	// REQUIRES: nothing
@@ -205,6 +245,12 @@ public class LibraryFinder implements EntryPoint {
 	private void loadFavoritesTable() {
 		// TODO Auto-generated method stub
 		//make Async Callback to get list of libraries from server
+		
+		//placeholder
+		favoritesTable.setText(0, 0, "Name");
+		favoritesTable.setText(0, 1, "Remove");
+		favoritesTable.setText(1, 0, "Library Name");
+		favoritesTable.setText(1, 1, "Button");
 
 	}
 
