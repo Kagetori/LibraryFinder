@@ -1,11 +1,14 @@
 package com.google.gwt.libraryfinder.client;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.google.gwt.libraryfinder.shared.FieldVerifier;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -18,6 +21,7 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -41,6 +45,7 @@ public class LibraryFinder implements EntryPoint {
 	LatLng latLngInVancouver = LatLng.newInstance(49.2827, -123.1207);				//Y
 	private MapWidget libraryFinderMap = new MapWidget(latLngInVancouver, 11);		//Y
 	CellTable<Library> libraryFinderTable = new CellTable<Library>();							//Y
+	ListBox libraryFinderFilter = new ListBox();
 	
 	private List<Library> libraries = new ArrayList<Library>();
 	
@@ -129,7 +134,7 @@ public class LibraryFinder implements EntryPoint {
 				Window.alert("Number of libraries found: " + result.size());
 				libraries = result;
 				
-				populateMap();
+				populateMap(libraries);
 				displayTable();
 			}
 			
@@ -147,7 +152,11 @@ public class LibraryFinder implements EntryPoint {
 		
 	}
 	
-	public void populateMap() {
+	public void populateMap(List<Library> libraries) {
+		libraryFinderMap.clearOverlays();
+		LatLon centralizeLatLon = libraries.get(0).getLatLon();
+		LatLng centralizeLatLng = LatLng.newInstance(centralizeLatLon.getLat(), centralizeLatLon.getLon());
+		libraryFinderMap.setCenter(centralizeLatLng);
 		for (Library l: libraries) {
 			LatLon latLon = l.getLatLon();
 			LatLng latLng = LatLng.newInstance(latLon.getLat(), latLon.getLon());
@@ -157,45 +166,83 @@ public class LibraryFinder implements EntryPoint {
 			//TODO: add favourite button to box
 			libraryFinderMap.addOverlay(marker);
 		}
-		//get libraries from filter method
-		//re-centralize map
 	}
 	
 	// REQUIRES: LatLng from marker
 	// MODIFIES: nothing
 	// EFFECTS: return a library from searching through global library with latlng
 	private Library getLibraryFromLatLng(LatLng latLng) {
-		//TODOS
+		//TODO:
 		return null;
-	}
-	
-	// REQUIRES: list of libraries
-	// MODIFIES: nothing
-	// EFFECTS: displays the drop-down filter menu
-	private void displayFilterMenu() {
-		// TODO Auto-generated method stub
-		//get cities from list of libraries
-		//remember show all option
-		//sort by alphabetical order (maybe helper method)
-	}
-	
-	// REQUIRES: nothing
-	// MODIFIES: nothing
-	// EFFECTS: return the city clicked from the filter menu
-	private String getCityFromFilter() {
-		// TODO Auto-generated method stub
-		return null;
-		
 	}
 
 	// REQUIRES: list of libraries (from field) and a city name
 	// MODIFIES: nothing
 	// EFFECTS: returns a list of libraries filtered by city
 	private List<Library> filterLibraries(String city) {
-		// TODO Auto-generated method stub
-		return null;
-		//may call displayMap and populateMap
-		
+		if (city.equals("Show All Libraries")) {
+			return libraries;
+		} else {
+			List<Library> filteredLibraries = new ArrayList<Library>();
+			for (Library l: libraries) {
+				if (l.getCity().equals(city)) {
+					filteredLibraries.add(l);
+				}
+			}
+			return filteredLibraries;
+		}
+	}
+	
+	//EFFECTS: refreshes the map according to the filter option
+	//this method is call when user select city from filter
+	private void refreshMap(int index) {
+		String city = libraryFinderFilter.getItemText(index);
+		List<Library> filteredLibraries = filterLibraries(city);
+		populateMap(filteredLibraries);
+	}
+	
+	// REQUIRES: list of libraries
+	// MODIFIES: nothing
+	// EFFECTS: displays the drop-down filter menu
+	private void displayFilterMenu() {
+		libraryFinderFilter.clear();
+		List<String> cityNames = getCityNames();
+		libraryFinderFilter.addItem("Show All Libraries");
+		for (String c: cityNames) {
+			libraryFinderFilter.addItem(c);
+		}
+		libraryFinderFilter.setVisibleItemCount(1);
+		// TODO: make the drop down scrollable?
+		libraryFinderFilter.addChangeHandler(new ChangeHandler() {
+			public void onChange(ChangeEvent event) {
+				refreshMap(libraryFinderFilter.getSelectedIndex());
+			}
+		});
+	}
+	
+	// EFFECTS: return a list of city names from the global libraries field with no duplication
+	// TODO: write tests
+	private List<String> getCityNames() {
+		List<String> cityNames = new ArrayList<String>();
+		for (Library l: libraries) {
+			if (!duplicateCity(cityNames, l.getCity())){
+				cityNames.add(l.getCity());
+			}
+		}
+		Collections.sort(cityNames);
+		return cityNames;
+	}
+	
+	// EFFECTS: returns true if city is found in cities, otherwise return false
+	// TODO: write tests
+	private boolean duplicateCity(List<String> cities, String city){
+		boolean duplicated = false;
+		for (String c: cities) {
+			if (c.equals(city)) {
+				duplicated = true;
+			}
+		}
+		return duplicated;
 	}
 
 	// REQUIRES: nothing
