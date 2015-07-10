@@ -151,7 +151,6 @@ public class LibraryFinder implements EntryPoint {
 		makeFavoritesTable();
 		
 		//TODO: loads favorites table
-
 		loadFavoritesTable();
 		
 
@@ -340,6 +339,19 @@ public class LibraryFinder implements EntryPoint {
 		favoritesTable.setText(0, 1, "Remove");
 //		favoritesTable.setText(1, 0, "Library Name");
 //		favoritesTable.setText(1, 1, "Button");
+		
+		//TODO: DELETE THIS LATER!!
+		LatLon ll1 = new LatLon(49.274931, -123.070318);
+		Library l1 = new Library("Britannia", "Vancouver", "1661 Napier", "V5L 4X4", "(604) 665-2222", ll1);
+		LatLon ll2 = new LatLon(54.014086, -124.008737);
+		Library l2 = new Library("Vanderhoof", "Vanderhoof", "230 Stewart Drive", "V0J 3A0", "(250) 567-4060", ll2);
+		LatLon ll3 = new LatLon(49.329034, -123.16538);
+		Library l3 = new Library("West Vancouver", "West Vancouver", "1950 Marine Drive", "V7V 1J8", "(604) 925-7400", ll3);
+		LatLon ll4 = new LatLon(50.117127, -122.956295);
+		Library l4 = new Library("Whistler", "Whistler", "4329 Main Street", "V0N 1B4", "(604) 935-8433", ll4);
+		
+		addFavorite(l1);
+		addFavorite(l2);
 
 	}
 
@@ -395,7 +407,7 @@ public class LibraryFinder implements EntryPoint {
 	// EFFECTS: checks server for duplicates and calls addFavorite
 	//note: wait for Yuki. Also, may make into checkDuplicate helper method.
 	//Will need to somehow figure out which library we are looking at from table/box in map
-	private void addFavorite() {
+	private void checkDuplicate() {
 		// TODO Auto-generated method stub
 		//makes Async Callback (get favorites)
 		
@@ -416,7 +428,6 @@ public class LibraryFinder implements EntryPoint {
 
 			@Override
 			public void onSuccess(Void result) {
-				// TODO Auto-generated method stub
 				displayFavorite(favoriteLibrary);
 			}
 			
