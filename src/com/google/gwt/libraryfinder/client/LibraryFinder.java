@@ -147,12 +147,11 @@ public class LibraryFinder implements EntryPoint {
 		//on click calls shareOnSocialMedia
 		buttonsPanel.add(socialLink); //just a placeholder
 		
-		displayFilterMenu();
-		
 		//TODO: makes favorites table 
 		makeFavoritesTable();
 		
 		//TODO: loads favorites table
+
 		loadFavoritesTable();
 		
 
@@ -218,6 +217,7 @@ public class LibraryFinder implements EntryPoint {
 				
 				populateMap(libraries);
 				displayTable();
+				displayFilterMenu();
 			}
 			
 		});
@@ -237,6 +237,10 @@ public class LibraryFinder implements EntryPoint {
 	public void populateMap(List<Library> libraries) {
 		libraryFinderMap.clearOverlays();
 		LatLon centralizeLatLon = libraries.get(0).getLatLon();
+		if (this.libraries.size() == libraries.size()){
+			LatLon VancouverLatLon = new LatLon(49.2827, -123.1207);
+			centralizeLatLon = VancouverLatLon;
+		}
 		LatLng centralizeLatLng = LatLng.newInstance(centralizeLatLon.getLat(), centralizeLatLon.getLon());
 		libraryFinderMap.setCenter(centralizeLatLng);
 		for (Library l: libraries) {
@@ -262,7 +266,7 @@ public class LibraryFinder implements EntryPoint {
 	// MODIFIES: nothing
 	// EFFECTS: returns a list of libraries filtered by city
 	private List<Library> filterLibraries(String city) {
-		if (city.equals("Show All Libraries")) {
+		if (city.equals("Show All")) {
 			return libraries;
 		} else {
 			List<Library> filteredLibraries = new ArrayList<Library>();
@@ -288,8 +292,8 @@ public class LibraryFinder implements EntryPoint {
 	// EFFECTS: displays the drop-down filter menu
 	private void displayFilterMenu() {
 		libraryFinderFilter.clear();
+		libraryFinderFilter.addItem("Show All");
 		List<String> cityNames = getCityNames();
-		libraryFinderFilter.addItem("Show All Libraries");
 		for (String c: cityNames) {
 			libraryFinderFilter.addItem(c);
 		}
