@@ -23,6 +23,15 @@
     <!-- If you add any GWT meta tags, they must   -->
     <!-- be added before this line.                -->
     <!--                                           -->
+    
+    
+    
+<!-- 	<meta name="google-signin-scope" content="profile email"> 
+    <meta name="google-signin-client_id" content="540255793876-jr8d6ljupdea86b9lt52rsbo87pduik5.apps.googleusercontent.com">
+    <script src="https://apis.google.com/js/platform.js" async defer></script> -->
+    
+    
+    
     <script type="text/javascript" language="javascript" src="libraryfinder/libraryfinder.nocache.js"></script>
     <script src="http://maps.google.com/maps?gwt=1&file=api&v=2&sensor=false"></script>
   </head>
@@ -33,9 +42,54 @@
   <!-- to create a completely dynamic UI.        -->
   <!--                                           -->
   <body>
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.4";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+	<h1>Library Finder</h1>
+	
+	<div class="fb-share-button" data-href="http://1-dot-libraryfinder-1000.appspot.com" data-layout="icon"></div>
   
-  <h1>Library Finder</h1>
   <div id="libraryFinder"></div>
+  
+  
+  
+  
+<!-- <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
+  <script>
+      function onSignIn(googleUser) {
+        // Useful data for your client-side scripts:
+        var profile = googleUser.getBasicProfile();
+        console.log("ID: " + profile.getId()); // Don't send this directly to your server!
+        console.log("Name: " + profile.getName());
+        console.log("Image URL: " + profile.getImageUrl());
+        console.log("Email: " + profile.getEmail());
+
+        // The ID token you need to pass to your backend:
+        var id_token = googleUser.getAuthResponse().id_token;
+        console.log("ID Token: " + id_token);
+      };
+   </script> -->	
+   
+<!--    <a href="#" onclick="signOut();">Sign out</a>
+	<script>
+  	function signOut() {
+    	var auth2 = gapi.auth2.getAuthInstance();
+    	auth2.signOut().then(function () {
+      		console.log('User signed out.');
+    	});
+  	}
+	</script>   -->
+
+
+
 
     <!-- OPTIONAL: include this if you want history support -->
     <iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1' style="position:absolute;width:0;height:0;border:0"></iframe>
