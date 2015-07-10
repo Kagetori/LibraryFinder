@@ -52,6 +52,7 @@ public class LibraryFinder implements EntryPoint {
 	
 	// for library service
 	private final LibraryServiceAsync libraryService = GWT.create(LibraryService.class);
+	private final FavoriteServiceAsync favoriteService = GWT.create(FavoriteService.class);
 	
 	private LatLng latLngInVancouver = LatLng.newInstance(49.2827, -123.1207);				//Y
 	private MapWidget libraryFinderMap = new MapWidget(latLngInVancouver, 11);		//Y
@@ -136,9 +137,7 @@ public class LibraryFinder implements EntryPoint {
 		displayMap();
 		queryLibrariesFromServer();
 		
-		//Assemble top panel
-		//TODO: make panel for email, logout, facebook
-		
+		//Assemble panel for email, logout, facebook
 		buttonsPanel.addStyleName("buttonToRight");
 		
 		buttonsPanel.add(userEmail);
@@ -148,10 +147,12 @@ public class LibraryFinder implements EntryPoint {
 		//on click calls shareOnSocialMedia
 		buttonsPanel.add(socialLink); //just a placeholder
 		
-		//TODO: make panel for filter drop-down menu 
 		displayFilterMenu();
 		
-		//TODO: make favorites table
+		//TODO: makes favorites table 
+		makeFavoritesTable();
+		
+		//TODO: loads favorites table
 		loadFavoritesTable();
 		
 
@@ -198,7 +199,6 @@ public class LibraryFinder implements EntryPoint {
 			}
 		});
 	}	
-
 
 	// REQUIRES: nothing
 	// MODIFIES: this
@@ -327,27 +327,43 @@ public class LibraryFinder implements EntryPoint {
 		return duplicated;
 	}
 
+	//REQUIRES: nothing
+	//MODIFIES: view
+	//EFFECTS: makes a favorites table and adds style elements
+	private void makeFavoritesTable() {
+		//placeholder
+		favoritesTable.setText(0, 0, "Name");
+		favoritesTable.setText(0, 1, "Remove");
+//		favoritesTable.setText(1, 0, "Library Name");
+//		favoritesTable.setText(1, 1, "Button");
+
+	}
+
 	// REQUIRES: nothing
 	// MODIFIES: nothing
 	// EFFECTS: gets list of favorites and display them on success 
 	//(calls displayFavoritesTable)
 	private void loadFavoritesTable() {
-		// TODO Auto-generated method stub
-		//make Async Callback to get list of libraries from server
-		
-		//placeholder
-		favoritesTable.setText(0, 0, "Name");
-		favoritesTable.setText(0, 1, "Remove");
-		favoritesTable.setText(1, 0, "Library Name");
-		favoritesTable.setText(1, 1, "Button");
+		favoriteService.getFavorites(new AsyncCallback<List<Library>>() {
 
+			//@Override
+			public void onFailure(Throwable caught) {
+				Window.alert("Failed to get favorite libraries from server!");
+			}
+
+			//@Override
+			public void onSuccess(List<Library> favoriteLibraries) {
+				displayFavoritesTable(favoriteLibraries);
+			}
+			
+		});
+		
 	}
 
 	// REQUIRES: list of libraries
 	// MODIFIES: nothing
 	// EFFECTS: displays the favorites table
 	private void displayFavoritesTable(List<Library> favoriteLibraries) {
-		// TODO Auto-generated method stub
 		for (Library l: favoriteLibraries) {
 			displayFavorite(l);
 		}
@@ -356,10 +372,18 @@ public class LibraryFinder implements EntryPoint {
 	// REQUIRES: library
 	// MODIFIES: nothing
 	// EFFECTS: displays the library
-	private void displayFavorite(Library favoriteLibrary) {
-		// TODO Auto-generated method stub
-		//remember to add the "remove" button
+	private void displayFavorite(final Library favoriteLibrary) {
+		// TODO: put into table
 		
+		//remember to add the "remove" button
+		Button removeFavoriteButton = new Button("X");
+		removeFavoriteButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				removeFavorite(favoriteLibrary);
+			}
+		});
 	}
 	
 	// REQUIRES: nothing
@@ -376,17 +400,44 @@ public class LibraryFinder implements EntryPoint {
 	// REQUIRES: library
 	// MODIFIES: nothing
 	// EFFECTS: adds the library to the server and calls displayFavorite
-	private void addFavorite(Library favoriteLibrary) {
+	private void addFavorite(final Library favoriteLibrary) {
 		// TODO Auto-generated method stub
 		//makes Async Callback (add favorite)
+		favoriteService.addFavorite(favoriteLibrary, new AsyncCallback<Void>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				Window.alert("Failed to add library to favorites");
+			}
+
+			@Override
+			public void onSuccess(Void result) {
+				// TODO Auto-generated method stub
+				displayFavorite(favoriteLibrary);
+			}
+			
+		});
 	}
 	
 	// REQUIRES: library
 	// MODIFIES: nothing
 	// EFFECTS: removes the library from server
-	private void removeFavorite(Library favoriteLibrary) {
+	private void removeFavorite(final Library favoriteLibrary) {
 		// TODO Auto-generated method stub
 		//makes Async Callback (remove favorite)
+		favoriteService.removeFavorite(favoriteLibrary, new AsyncCallback<Void>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				Window.alert("Failed to remove library from favorites");
+			}
+
+			@Override
+			public void onSuccess(Void result) {
+				undisplayFavorite(favoriteLibrary);
+			}
+			
+		});
 		
 	}
 	
