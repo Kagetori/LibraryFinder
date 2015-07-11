@@ -32,16 +32,19 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.datepicker.client.DatePicker;
 import com.google.gwt.libraryfinder.shared.Library;
-import com.google.gwt.libraryfinder.shared.LatLon;			//Y
-import com.google.gwt.maps.client.MapWidget;				//Y
-import com.google.gwt.maps.client.geom.LatLng;				//Y
-import com.google.gwt.maps.client.control.LargeMapControl;	//Y
-import com.google.gwt.maps.client.overlay.Marker;			//Y
-import com.google.gwt.user.cellview.client.CellTable;		//Y
-import com.google.gwt.user.cellview.client.Column;			//Y
-import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;	//Y
-import com.google.gwt.user.cellview.client.TextColumn;		//Y
-import com.google.gwt.cell.client.ButtonCell;				//Y
+import com.google.gwt.libraryfinder.shared.LatLon;
+import com.google.gwt.maps.client.InfoWindow;
+import com.google.gwt.maps.client.InfoWindowContent;
+import com.google.gwt.maps.client.MapWidget;
+import com.google.gwt.maps.client.event.MarkerClickHandler;
+import com.google.gwt.maps.client.geom.LatLng;
+import com.google.gwt.maps.client.control.LargeMapControl;
+import com.google.gwt.maps.client.overlay.Marker;
+import com.google.gwt.user.cellview.client.CellTable;
+import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
+import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.cell.client.ButtonCell;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -54,10 +57,11 @@ public class LibraryFinder implements EntryPoint {
 	private final LibraryServiceAsync libraryService = GWT.create(LibraryService.class);
 	private final FavoriteServiceAsync favoriteService = GWT.create(FavoriteService.class);
 	
-	private LatLng latLngInVancouver = LatLng.newInstance(49.2827, -123.1207);				//Y
-	private MapWidget libraryFinderMap = new MapWidget(latLngInVancouver, 11);		//Y
+	private LatLng latLngInVancouver = LatLng.newInstance(49.2827, -123.1207);
+	private int defaultZoom = 11;
+	private MapWidget libraryFinderMap = new MapWidget(latLngInVancouver, defaultZoom);
 	private Label libraryFinderTableTitle = new Label("Table of Libraries");
-	private CellTable<Library> libraryFinderTable = new CellTable<Library>();							//Y
+	private CellTable<Library> libraryFinderTable = new CellTable<Library>();
 	
 	private Label userEmail = new Label("User Email");
 	//private Button logoutButton = new Button("Logout");
@@ -242,24 +246,32 @@ public class LibraryFinder implements EntryPoint {
 			centralizeLatLon = VancouverLatLon;
 		}
 		LatLng centralizeLatLng = LatLng.newInstance(centralizeLatLon.getLat(), centralizeLatLon.getLon());
-		libraryFinderMap.setCenter(centralizeLatLng);
+		libraryFinderMap.setCenter(centralizeLatLng, defaultZoom);
 		for (Library l: libraries) {
-			LatLon latLon = l.getLatLon();
-			LatLng latLng = LatLng.newInstance(latLon.getLat(), latLon.getLon());
-			Marker marker = new Marker(latLng);	//final
-			//TODO: call getLibraryFromLatLng(LatLng latLng)
-			//TODO: implement method that shows a box with library info when marker is clicked
-			//TODO: add favourite button to box
+			Marker marker = constructMarker(l);
 			libraryFinderMap.addOverlay(marker);
 		}
 	}
 	
-	// REQUIRES: LatLng from marker
-	// MODIFIES: nothing
-	// EFFECTS: return a library from searching through global library with latlng
-	private Library getLibraryFromLatLng(LatLng latLng) {
-		//TODO:
-		return null;
+	public Marker constructMarker(Library l) {
+		LatLon latLon = l.getLatLon();
+		LatLng latLng = LatLng.newInstance(latLon.getLat(), latLon.getLon());
+		final Marker marker = new Marker(latLng);
+		final String infoWindowString = getInfoWindowString(l);
+		marker.addMarkerClickHandler(new MarkerClickHandler() {
+			@Override
+			public void onClick(MarkerClickEvent event) {
+				InfoWindow info=libraryFinderMap.getInfoWindow();
+				info.open(marker, new InfoWindowContent(infoWindowString));
+				//TODO: add favorite button to box
+			}
+		});
+		return marker;
+	}
+	
+	public String getInfoWindowString(Library l) {
+		String contentString = "<p><b>" + l.getName() + " library</b>" + "<br />" + l.getAddress() + "<br />" + l.getCity() + ", BC  " + l.getPostalCode() + "<br />" + l.getPhone() + "</p>";
+		return contentString;
 	}
 
 	// REQUIRES: list of libraries (from field) and a city name
@@ -456,7 +468,7 @@ public class LibraryFinder implements EntryPoint {
 	// REQUIRES: list of libraries
 	// MODIFIES: nothing
 	// EFFECTS: put in headings and library information into the table
-	private void displayTable() {	//Y
+	private void displayTable() {
 //		table.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
 		TextColumn<Library> nameColumn = new TextColumn<Library>() {
 			@Override
