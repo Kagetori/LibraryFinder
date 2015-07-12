@@ -20,9 +20,11 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -30,6 +32,7 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DatePicker;
 import com.google.gwt.libraryfinder.shared.Library;
 import com.google.gwt.libraryfinder.shared.LatLon;
@@ -60,6 +63,7 @@ public class LibraryFinder implements EntryPoint {
 	private LatLng latLngInVancouver = LatLng.newInstance(49.2827, -123.1207);
 	private int defaultZoom = 11;
 	private MapWidget libraryFinderMap = new MapWidget(latLngInVancouver, defaultZoom);
+	private InfoWindow info = null;
 	private Label libraryFinderTableTitle = new Label("Table of Libraries");
 	private CellTable<Library> libraryFinderTable = new CellTable<Library>();
 	
@@ -253,24 +257,40 @@ public class LibraryFinder implements EntryPoint {
 		}
 	}
 	
-	public Marker constructMarker(Library l) {
+	public Marker constructMarker(final Library l) {
 		LatLon latLon = l.getLatLon();
 		LatLng latLng = LatLng.newInstance(latLon.getLat(), latLon.getLon());
 		final Marker marker = new Marker(latLng);
-		final String infoWindowString = getInfoWindowString(l);
 		marker.addMarkerClickHandler(new MarkerClickHandler() {
 			@Override
 			public void onClick(MarkerClickEvent event) {
-				InfoWindow info=libraryFinderMap.getInfoWindow();
-				info.open(marker, new InfoWindowContent(infoWindowString));
-				//TODO: add favorite button to box
+				if (info != null) {
+					info.close();
+				}
+				info=libraryFinderMap.getInfoWindow();
+				info.open(marker, getInfoWindowContent(l));
 			}
 		});
 		return marker;
 	}
 	
+	public InfoWindowContent getInfoWindowContent(Library l) {
+		final String infoWindowString = getInfoWindowString(l);
+		Button favoriteButton = new Button("Add to favorite");
+		favoriteButton.addClickListener(new ClickListener(){
+			@Override
+			public void onClick(Widget sender) {
+				//TODO: add l to favorite
+			}
+		});
+		HTMLPanel panel = new HTMLPanel(infoWindowString + "<div id='favoriteButton'></div>");
+		panel.add(favoriteButton, "favoriteButton");
+		final InfoWindowContent content = new InfoWindowContent(panel);
+		return content;
+	}
+	
 	public String getInfoWindowString(Library l) {
-		String contentString = "<p><b>" + l.getName() + " library</b>" + "<br />" + l.getAddress() + "<br />" + l.getCity() + ", BC  " + l.getPostalCode() + "<br />" + l.getPhone() + "</p>";
+		String contentString = "<b>" + l.getName() + " library</b>" + "<br />" + l.getAddress() + "<br />" + l.getCity() + ", BC  " + l.getPostalCode() + "<br />" + l.getPhone() + "<br />" + "<br />";
 		return contentString;
 	}
 
@@ -310,7 +330,6 @@ public class LibraryFinder implements EntryPoint {
 			libraryFinderFilter.addItem(c);
 		}
 		libraryFinderFilter.setVisibleItemCount(1);
-		// TODO: make the drop down scrollable?
 		libraryFinderFilter.addChangeHandler(new ChangeHandler() {
 			public void onChange(ChangeEvent event) {
 				refreshMap(libraryFinderFilter.getSelectedIndex());
