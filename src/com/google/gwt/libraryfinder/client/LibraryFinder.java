@@ -337,8 +337,6 @@ public class LibraryFinder implements EntryPoint {
 		//placeholder
 		favoritesTable.setText(0, 0, "Name");
 		favoritesTable.setText(0, 1, "Remove");
-//		favoritesTable.setText(1, 0, "Library Name");
-//		favoritesTable.setText(1, 1, "Button");
 		
 		//TODO: DELETE THIS LATER!!
 		LatLon ll1 = new LatLon(49.274931, -123.070318);
@@ -389,9 +387,12 @@ public class LibraryFinder implements EntryPoint {
 	// MODIFIES: nothing
 	// EFFECTS: displays the library
 	private void displayFavorite(final Library favoriteLibrary) {
-		// TODO: put into table
+		int row = favoritesTable.getRowCount();
+		String libraryName = favoriteLibrary.getName();
 		
-		//remember to add the "remove" button
+		favoritesTable.setText(row, 0, libraryName);
+		
+		//add the "remove" button
 		Button removeFavoriteButton = new Button("X");
 		removeFavoriteButton.addClickHandler(new ClickHandler() {
 
@@ -400,6 +401,8 @@ public class LibraryFinder implements EntryPoint {
 				removeFavorite(favoriteLibrary);
 			}
 		});
+		
+		favoritesTable.setWidget(row, 1, removeFavoriteButton);
 	}
 	
 	// REQUIRES: nothing
