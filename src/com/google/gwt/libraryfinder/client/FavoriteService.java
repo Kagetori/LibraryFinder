@@ -10,7 +10,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface FavoriteService extends RemoteService {
 	
 	public List<Library> getFavorites() throws NotLoggedInException;
-	public void removeFavorite(Library favoriteLibrary);
+	public void removeFavorite(Library favoriteLibrary) throws NotLoggedInException;
 	public void addFavorite(Library favoriteLibrary) throws NotLoggedInException;
 
 }

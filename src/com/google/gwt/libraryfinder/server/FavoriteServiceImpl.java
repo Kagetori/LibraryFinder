@@ -34,9 +34,9 @@ public class FavoriteServiceImpl extends RemoteServiceServlet implements Favorit
 		try {
 			Query q = pm.newQuery(Favorite.class, "user == u");
 			q.declareParameters("com.google.appengine.api.users.User u");
-			List<Favorite> result = (List<Favorite>) q.execute(getUser());
+			List<Favorite> favorites = (List<Favorite>) q.execute(getUser());
 			
-			for(Favorite f: result) {
+			for(Favorite f: favorites) {
 				Library l = f.getLibrary();
 				favoriteLibraries.add(l);
 			}
@@ -49,17 +49,34 @@ public class FavoriteServiceImpl extends RemoteServiceServlet implements Favorit
 	}
 
 	//REQUIRES: valid library in favorites
-	//MODIFIES: list of favorite libraries stored on server
-	//EFFECTS: removes specified library from list of favorite libraries on server
+	//MODIFIES: list of favorites stored on server
+	//EFFECTS: removes specified library from list of favorites on server
 	@Override
-	public void removeFavorite(Library favoriteLibrary) {
-		// TODO Auto-generated method stub
+	public void removeFavorite(Library favoriteLibrary) throws NotLoggedInException {
+		checkLoggedIn();
+		PersistenceManager pm = PMF.getPersistenceManager();
+		String deleteName = favoriteLibrary.getName();
+		
+		try {
+			Query q = pm.newQuery(Favorite.class, "user == u");
+			q.declareParameters("com.google.appengine.api.users.User u");
+			List<Favorite> favorites = (List<Favorite>) q.execute(getUser());
+			
+			for(Favorite f: favorites) {
+				Library l = f.getLibrary();
+				if(l.getName().equals(deleteName)) {
+					pm.deletePersistent(f);
+				}
+			}
+		} finally {
+			pm.close();
+		}
 		
 	}
 
 	//REQUIRES: valid library
 	//MODIFIES: list of favorite libraries stored on server
-	//EFFECTS: adds specified library to list of favorite libraries on server
+	//EFFECTS: adds specified library to list of favorites on server
 	@Override
 	public void addFavorite(Library favoriteLibrary) throws NotLoggedInException {
 		checkLoggedIn();

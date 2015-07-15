@@ -49,6 +49,7 @@ import com.google.gwt.cell.client.ButtonCell;				//Y
 public class LibraryFinder implements EntryPoint {
 	
 	private List<Library> libraries = new ArrayList<Library>();
+	private List<Library> favoriteLibraries = new ArrayList<Library>();
 	
 	// for library service
 	private final LibraryServiceAsync libraryService = GWT.create(LibraryService.class);
@@ -348,15 +349,16 @@ public class LibraryFinder implements EntryPoint {
 		LatLon ll4 = new LatLon(50.117127, -122.956295);
 		Library l4 = new Library("Whistler", "Whistler", "4329 Main Street", "V0N 1B4", "(604) 935-8433", ll4);
 		
-		addFavorite(l1);
-		addFavorite(l2);
+		addFavoriteLibrary(l1);
+		addFavoriteLibrary(l2);
+		addFavoriteLibrary(l3);
+		addFavoriteLibrary(l2);
 
 	}
 
 	// REQUIRES: nothing
 	// MODIFIES: nothing
-	// EFFECTS: gets list of favorites and display them on success 
-	//(calls displayFavoritesTable)
+	// EFFECTS: gets list of favorites from server and display them on success 
 	private void loadFavoritesTable() {
 		favoriteService.getFavorites(new AsyncCallback<List<Library>>() {
 
@@ -384,10 +386,11 @@ public class LibraryFinder implements EntryPoint {
 	}
 
 	// REQUIRES: library
-	// MODIFIES: nothing
+	// MODIFIES: list of favorite libraries
 	// EFFECTS: displays the library
 	private void displayFavorite(final Library favoriteLibrary) {
 		int row = favoritesTable.getRowCount();
+		favoriteLibraries.add(favoriteLibrary);
 		String libraryName = favoriteLibrary.getName();
 		
 		favoritesTable.setText(row, 0, libraryName);
@@ -398,6 +401,7 @@ public class LibraryFinder implements EntryPoint {
 
 			@Override
 			public void onClick(ClickEvent event) {
+				//int rowIndex = favoritesTable.getCellForEvent(event).getRowIndex();
 				removeFavorite(favoriteLibrary);
 			}
 		});
@@ -405,23 +409,60 @@ public class LibraryFinder implements EntryPoint {
 		favoritesTable.setWidget(row, 1, removeFavoriteButton);
 	}
 	
+	//REQUIRES: valid library
+	//MODIFIES: nothing
+	//EFFECTS: returns a window alert if library is already in favorites, adds library if it is not
+	private void addFavoriteLibrary(Library library) {
+		if(hasDuplicate(library)){
+			Window.alert("Library is already in favorites!");
+		} else {
+			addFavorite(library);
+		}
+	}
+	
 	// REQUIRES: nothing
 	// MODIFIES: nothing
 	// EFFECTS: checks server for duplicates and calls addFavorite
 	//note: wait for Yuki. Also, may make into checkDuplicate helper method.
 	//Will need to somehow figure out which library we are looking at from table/box in map
-	private void checkDuplicate() {
-		// TODO Auto-generated method stub
-		//makes Async Callback (get favorites)
+	private boolean hasDuplicate(Library library) {
+		final String libraryName = library.getName();
+		Boolean hasDuplicate = false;
 		
+		for(Library l: favoriteLibraries) {
+			if(l.getName().equals(libraryName)) {
+				hasDuplicate = true;
+			}
+		}
+		
+		return hasDuplicate;
+		
+//		boolean inFavorites = false;
+//		favoriteService.getFavorites(new AsyncCallback<List<Library>>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				Window.alert("Failed to check for duplicate libraries!");
+//				
+//			}
+//
+//			@Override
+//			public void onSuccess(List<Library> result) {
+//				for(Library l: result) {
+//					if(l.getName().equals(libraryName)) {
+//					}
+//				}
+//				
+//			}
+//			
+//		});
+//		
 	}
 	
 	// REQUIRES: library
 	// MODIFIES: nothing
 	// EFFECTS: adds the library to the server and calls displayFavorite
 	private void addFavorite(final Library favoriteLibrary) {
-		// TODO Auto-generated method stub
-		//makes Async Callback (add favorite)
 		favoriteService.addFavorite(favoriteLibrary, new AsyncCallback<Void>() {
 
 			@Override
@@ -441,8 +482,6 @@ public class LibraryFinder implements EntryPoint {
 	// MODIFIES: nothing
 	// EFFECTS: removes the library from server
 	private void removeFavorite(final Library favoriteLibrary) {
-		// TODO Auto-generated method stub
-		//makes Async Callback (remove favorite)
 		favoriteService.removeFavorite(favoriteLibrary, new AsyncCallback<Void>() {
 
 			@Override
@@ -452,6 +491,7 @@ public class LibraryFinder implements EntryPoint {
 
 			@Override
 			public void onSuccess(Void result) {
+				//favoritesTable.removeRow(rowIndex);
 				undisplayFavorite(favoriteLibrary);
 			}
 			
@@ -460,10 +500,12 @@ public class LibraryFinder implements EntryPoint {
 	}
 	
 	// REQUIRES: library
-	// MODIFIES: nothing
+	// MODIFIES: list of favorite libraries
 	// EFFECTS: removes the library from the local table
 	private void undisplayFavorite(Library favoriteLibrary) {
-		// TODO Auto-generated method stub
+		int removedIndex = favoriteLibraries.indexOf(favoriteLibrary);
+		favoriteLibraries.remove(removedIndex);
+		favoritesTable.removeRow(removedIndex+1);
 		
 	}
 
@@ -569,5 +611,4 @@ public class LibraryFinder implements EntryPoint {
 			Window.Location.replace(loginInfo.getLogoutUrl());
 		}
 	}
-	
 }
