@@ -8,6 +8,7 @@ import java.util.List;
 import com.google.gwt.libraryfinder.shared.FieldVerifier;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -50,6 +51,7 @@ import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.cell.client.ButtonCell;
+import com.google.gwt.cell.client.ClickableTextCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.dom.client.Style.Display;
 
@@ -536,12 +538,31 @@ public class LibraryFinder implements EntryPoint {
 	// MODIFIES: nothing
 	// EFFECTS: put in headings and library information into the table
 	private void displayTable() {
-		TextColumn<Library> nameColumn = new TextColumn<Library>() {
+		Column<Library, String> nameColumn = new Column<Library, String>(new ClickableTextCell()) {
 			@Override
 			public String getValue(Library object) {
 				return object.getName();
 			}
 		};
+		
+		nameColumn.setFieldUpdater(new FieldUpdater<Library, String>(){
+
+			@Override
+			public void update(int index, Library object, String value) {
+				goToLibraryOnMap(object);
+//				Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+//					
+//					@Override
+//					public void execute() {
+//						((FocusWidget) mapPanel).setFocus(true);
+//						
+//					}
+//				});
+//				libraryFinderTable.getElement().focus();
+//				Window.scrollTo(0,0);
+			}
+		});
+		
 		libraryFinderTable.addColumn(nameColumn, "Branch Name");
 		TextColumn<Library> phoneColumn = new TextColumn<Library>() {
 			@Override
@@ -614,6 +635,15 @@ public class LibraryFinder implements EntryPoint {
 				return a.getName().compareTo(b.getName());
 			}
 		});
+	}
+	
+	//REQUIRES: a library
+	//MODIFIES: nothing
+	//EFFECTS: takes a library, makes it into a list, call populateMap
+	public void goToLibraryOnMap(Library l) {
+		List<Library> oneLibrary = new ArrayList<Library>();
+		oneLibrary.add(l);
+		populateMap(oneLibrary);
 	}
 
 	//REQUIRES: nothing
