@@ -84,8 +84,10 @@ public class LibraryFinder implements EntryPoint {
 	private HorizontalPanel buttonsPanel = new HorizontalPanel();
 	private HorizontalPanel mapPanel = new HorizontalPanel();
 	private VerticalPanel mapSidePanel = new VerticalPanel();
-	private VerticalPanel mainPanel = new VerticalPanel();
 	private ScrollPanel scrollPanel = new ScrollPanel();
+	private HorizontalPanel dataButtonsPanel = new HorizontalPanel();
+	private ScrollPanel libraryTablePanel = new ScrollPanel();
+	private VerticalPanel mainPanel = new VerticalPanel();
 	
 	// for login/logout page
 	private LoginInfo loginInfo = null;
@@ -181,15 +183,21 @@ public class LibraryFinder implements EntryPoint {
 		
 		// only admins can see these buttons
 		if (loginInfo.getEmailAddress() == "phoebeyu7@gmail.com" || loginInfo.getEmailAddress() == "yukiwongky@gmail.com" || loginInfo.getEmailAddress() == "meng.tian401@gmail.com") {
-			mainPanel.add(loadDataButton);
-			mainPanel.add(clearDataButton);
+			
+			dataButtonsPanel.add(loadDataButton);
+			dataButtonsPanel.add(clearDataButton);
+			mainPanel.add(dataButtonsPanel);
 		}
 		
 		//Assemble bottom part of panel
 		libraryFinderTableTitle.setStyleName("tableTitle");
+		mainPanel.add(libraryFinderTableTitle); 
 		
-		mainPanel.add(libraryFinderTableTitle);
-		mainPanel.add(libraryFinderTable); 
+		libraryTablePanel.add(libraryFinderTable);
+		libraryTablePanel.setSize("1150px", "600px");
+		libraryFinderTable.setWidth("100%");
+
+		mainPanel.add(libraryTablePanel); 
 		
 		//Associate panels with html page
 		RootPanel.get("libraryFinder").add(mainPanel);
