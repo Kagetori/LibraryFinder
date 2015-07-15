@@ -2,6 +2,7 @@ package com.google.gwt.libraryfinder.client;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import com.google.gwt.libraryfinder.shared.FieldVerifier;
@@ -146,6 +147,7 @@ public class LibraryFinder implements EntryPoint {
 	private void loadLibraryFinder() {
 		
 		displayMap();
+		displayTable();
 		queryLibrariesFromServer();
 		
 		//Assemble panel for email, logout, facebook
@@ -244,7 +246,7 @@ public class LibraryFinder implements EntryPoint {
 				libraries = result;
 				
 				populateMap(libraries);
-				displayTable();
+				populateTable(libraries);
 				displayFilterMenu();
 			}
 			
@@ -333,10 +335,12 @@ public class LibraryFinder implements EntryPoint {
 	
 	//EFFECTS: refreshes the map according to the filter option
 	//this method is call when user select city from filter
-	private void refreshMap(int index) {
+	private void refresh(int index) {
 		String city = libraryFinderFilter.getItemText(index);
 		List<Library> filteredLibraries = filterLibraries(city);
 		populateMap(filteredLibraries);
+		populateTable(filteredLibraries);
+		//TODO: implement method
 	}
 	
 	// REQUIRES: list of libraries
@@ -352,7 +356,7 @@ public class LibraryFinder implements EntryPoint {
 		libraryFinderFilter.setVisibleItemCount(1);
 		libraryFinderFilter.addChangeHandler(new ChangeHandler() {
 			public void onChange(ChangeEvent event) {
-				refreshMap(libraryFinderFilter.getSelectedIndex());
+				refresh(libraryFinderFilter.getSelectedIndex());
 			}
 		});
 	}
@@ -532,7 +536,6 @@ public class LibraryFinder implements EntryPoint {
 	// MODIFIES: nothing
 	// EFFECTS: put in headings and library information into the table
 	private void displayTable() {
-//		table.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
 		TextColumn<Library> nameColumn = new TextColumn<Library>() {
 			@Override
 			public String getValue(Library object) {
@@ -584,9 +587,33 @@ public class LibraryFinder implements EntryPoint {
 		
 		
 		libraryFinderTable.addColumn(buttonColumn, "Add To Favourite");
+	}
+	
+	public void populateTable(List<Library> libraries){
+		sortLibraryByName(libraries);
+		sortLibraryByCity(libraries);
 		libraryFinderTable.setVisibleRange(0, libraries.size());
 		libraryFinderTable.setRowCount(libraries.size(), true);
 		libraryFinderTable.setRowData(0,libraries);
+	}
+	
+	public void sortLibraryByCity(List<Library> libraries){
+		Collections.sort(libraries, new Comparator<Library>() {
+			@Override
+			public int compare(Library a, Library b) {
+				return a.getCity().compareTo(b.getCity());
+			}
+		});
+	}
+	
+	public void sortLibraryByName(List<Library> libraries){
+		//TODO
+		Collections.sort(libraries, new Comparator<Library>() {
+			@Override
+			public int compare(Library a, Library b) {
+				return a.getName().compareTo(b.getName());
+			}
+		});
 	}
 
 	//REQUIRES: nothing
