@@ -20,6 +20,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
@@ -31,18 +32,23 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DatePicker;
 import com.google.gwt.libraryfinder.shared.Library;
-import com.google.gwt.libraryfinder.shared.LatLon;			//Y
-import com.google.gwt.maps.client.MapWidget;				//Y
-import com.google.gwt.maps.client.geom.LatLng;				//Y
-import com.google.gwt.maps.client.control.LargeMapControl;	//Y
-import com.google.gwt.maps.client.overlay.Marker;			//Y
-import com.google.gwt.user.cellview.client.CellTable;		//Y
-import com.google.gwt.user.cellview.client.Column;			//Y
-import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;	//Y
-import com.google.gwt.user.cellview.client.TextColumn;		//Y
-import com.google.gwt.cell.client.ButtonCell;				//Y
+import com.google.gwt.libraryfinder.shared.LatLon;
+import com.google.gwt.maps.client.InfoWindow;
+import com.google.gwt.maps.client.InfoWindowContent;
+import com.google.gwt.maps.client.MapWidget;
+import com.google.gwt.maps.client.event.MarkerClickHandler;
+import com.google.gwt.maps.client.geom.LatLng;
+import com.google.gwt.maps.client.control.LargeMapControl;
+import com.google.gwt.maps.client.overlay.Marker;
+import com.google.gwt.user.cellview.client.CellTable;
+import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
+import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.cell.client.ButtonCell;
+import com.google.gwt.cell.client.FieldUpdater;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -50,24 +56,25 @@ import com.google.gwt.cell.client.ButtonCell;				//Y
 public class LibraryFinder implements EntryPoint {
 	
 	private List<Library> libraries = new ArrayList<Library>();
+	private List<Library> favoriteLibraries = new ArrayList<Library>();
 	
 	// for library service
 	private final LibraryServiceAsync libraryService = GWT.create(LibraryService.class);
 	private final FavoriteServiceAsync favoriteService = GWT.create(FavoriteService.class);
 	
-	private LatLng latLngInVancouver = LatLng.newInstance(49.2827, -123.1207);				//Y
-	private MapWidget libraryFinderMap = new MapWidget(latLngInVancouver, 11);		//Y
+	private LatLng latLngInVancouver = LatLng.newInstance(49.2827, -123.1207);
+	private int defaultZoom = 11;
+	private MapWidget libraryFinderMap = new MapWidget(latLngInVancouver, defaultZoom);
+	private InfoWindow info = null;
 	private Label libraryFinderTableTitle = new Label("Table of Libraries");
-	private CellTable<Library> libraryFinderTable = new CellTable<Library>();							//Y
+	private CellTable<Library> libraryFinderTable = new CellTable<Library>();
 	
 	//private Label userEmail = new Label("User Email");
 	
 	private Label filterTitle = new Label("Search by City");
 	private ListBox libraryFinderFilter = new ListBox();
-	//private ListBox filterMenu = new ListBox();	//this is a placeholder
 	private Label favoritesTitle = new Label("Favorites");
 	private FlexTable favoritesTable = new FlexTable();
-	//private CellTable<Library> favoritesTable = new CellTable<Library>();
 	
 	private Button loadDataButton = new Button("Load Data");
 	private Button clearDataButton = new Button("Clear Data");
@@ -144,10 +151,7 @@ public class LibraryFinder implements EntryPoint {
 		buttonsPanel.add(new HTMLPanel("<div class=\"fb-share-button\" data-href=\"http://1-dot-libraryfinder-1000.appspot.com\" data-layout=\"button\"></div>"));
 		buttonsPanel.add(new HTMLPanel("<g:plus action=\"share\" annotation=\"none\"></g:plus>"));
 		
-		//TODO: makes favorites table 
 		makeFavoritesTable();
-		
-		//TODO: loads favorites table
 
 		loadFavoritesTable();
 		
@@ -244,24 +248,48 @@ public class LibraryFinder implements EntryPoint {
 			centralizeLatLon = VancouverLatLon;
 		}
 		LatLng centralizeLatLng = LatLng.newInstance(centralizeLatLon.getLat(), centralizeLatLon.getLon());
-		libraryFinderMap.setCenter(centralizeLatLng);
+		libraryFinderMap.setCenter(centralizeLatLng, defaultZoom);
 		for (Library l: libraries) {
-			LatLon latLon = l.getLatLon();
-			LatLng latLng = LatLng.newInstance(latLon.getLat(), latLon.getLon());
-			Marker marker = new Marker(latLng);	//final
-			//TODO: call getLibraryFromLatLng(LatLng latLng)
-			//TODO: implement method that shows a box with library info when marker is clicked
-			//TODO: add favourite button to box
+			Marker marker = constructMarker(l);
 			libraryFinderMap.addOverlay(marker);
 		}
 	}
 	
-	// REQUIRES: LatLng from marker
-	// MODIFIES: nothing
-	// EFFECTS: return a library from searching through global library with latlng
-	private Library getLibraryFromLatLng(LatLng latLng) {
-		//TODO:
-		return null;
+	public Marker constructMarker(final Library l) {
+		LatLon latLon = l.getLatLon();
+		LatLng latLng = LatLng.newInstance(latLon.getLat(), latLon.getLon());
+		final Marker marker = new Marker(latLng);
+		marker.addMarkerClickHandler(new MarkerClickHandler() {
+			@Override
+			public void onClick(MarkerClickEvent event) {
+				if (info != null) {
+					info.close();
+				}
+				info=libraryFinderMap.getInfoWindow();
+				info.open(marker, getInfoWindowContent(l));
+			}
+		});
+		return marker;
+	}
+	
+	public InfoWindowContent getInfoWindowContent(final Library library) {
+		final String infoWindowString = getInfoWindowString(library);
+		Button favoriteButton = new Button("Add to favorite");
+		favoriteButton.addClickHandler(new ClickHandler(){
+			@Override
+			public void onClick(ClickEvent event) {
+				addFavoriteLibrary(library);
+			}
+		});
+		HTMLPanel panel = new HTMLPanel(infoWindowString + "<div id='favoriteButton'></div>");
+		panel.add(favoriteButton, "favoriteButton");
+		final InfoWindowContent content = new InfoWindowContent(panel);
+		return content;
+	}
+	
+	public String getInfoWindowString(Library l) {
+		String contentString = "<b>" + l.getName() + " library</b>" + "<br />" + l.getAddress() + "<br />" + l.getCity() + ", BC  " + l.getPostalCode() + "<br />" + l.getPhone() + "<br />" + "<br />";
+		return contentString;
 	}
 
 	// REQUIRES: list of libraries (from field) and a city name
@@ -300,7 +328,6 @@ public class LibraryFinder implements EntryPoint {
 			libraryFinderFilter.addItem(c);
 		}
 		libraryFinderFilter.setVisibleItemCount(1);
-		// TODO: make the drop down scrollable?
 		libraryFinderFilter.addChangeHandler(new ChangeHandler() {
 			public void onChange(ChangeEvent event) {
 				refreshMap(libraryFinderFilter.getSelectedIndex());
@@ -337,18 +364,15 @@ public class LibraryFinder implements EntryPoint {
 	//MODIFIES: view
 	//EFFECTS: makes a favorites table and adds style elements
 	private void makeFavoritesTable() {
-		//placeholder
+		//TODO: make pretty
 		favoritesTable.setText(0, 0, "Name");
 		favoritesTable.setText(0, 1, "Remove");
-//		favoritesTable.setText(1, 0, "Library Name");
-//		favoritesTable.setText(1, 1, "Button");
 
 	}
 
 	// REQUIRES: nothing
 	// MODIFIES: nothing
-	// EFFECTS: gets list of favorites and display them on success 
-	//(calls displayFavoritesTable)
+	// EFFECTS: gets list of favorites from server and display them on success 
 	private void loadFavoritesTable() {
 		favoriteService.getFavorites(new AsyncCallback<List<Library>>() {
 
@@ -376,20 +400,38 @@ public class LibraryFinder implements EntryPoint {
 	}
 
 	// REQUIRES: library
-	// MODIFIES: nothing
+	// MODIFIES: list of favorite libraries
 	// EFFECTS: displays the library
 	private void displayFavorite(final Library favoriteLibrary) {
-		// TODO: put into table
+		int row = favoritesTable.getRowCount();
+		favoriteLibraries.add(favoriteLibrary);
+		String libraryName = favoriteLibrary.getName();
 		
-		//remember to add the "remove" button
+		favoritesTable.setText(row, 0, libraryName);
+		
+		//add the "remove" button
 		Button removeFavoriteButton = new Button("X");
 		removeFavoriteButton.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
+				//int rowIndex = favoritesTable.getCellForEvent(event).getRowIndex();
 				removeFavorite(favoriteLibrary);
 			}
 		});
+		
+		favoritesTable.setWidget(row, 1, removeFavoriteButton);
+	}
+	
+	//REQUIRES: valid library
+	//MODIFIES: nothing
+	//EFFECTS: returns a window alert if library is already in favorites, adds library if it is not
+	private void addFavoriteLibrary(Library library) {
+		if(hasDuplicate(library)){
+			Window.alert("Library is already in favorites!");
+		} else {
+			addFavorite(library);
+		}
 	}
 	
 	// REQUIRES: nothing
@@ -397,18 +439,24 @@ public class LibraryFinder implements EntryPoint {
 	// EFFECTS: checks server for duplicates and calls addFavorite
 	//note: wait for Yuki. Also, may make into checkDuplicate helper method.
 	//Will need to somehow figure out which library we are looking at from table/box in map
-	private void addFavorite() {
-		// TODO Auto-generated method stub
-		//makes Async Callback (get favorites)
+	private boolean hasDuplicate(Library library) {
+		final String libraryName = library.getName();
+		Boolean hasDuplicate = false;
 		
+		for(Library l: favoriteLibraries) {
+			if(l.getName().equals(libraryName)) {
+				hasDuplicate = true;
+			}
+		}
+		
+		return hasDuplicate;
+
 	}
 	
 	// REQUIRES: library
 	// MODIFIES: nothing
 	// EFFECTS: adds the library to the server and calls displayFavorite
 	private void addFavorite(final Library favoriteLibrary) {
-		// TODO Auto-generated method stub
-		//makes Async Callback (add favorite)
 		favoriteService.addFavorite(favoriteLibrary, new AsyncCallback<Void>() {
 
 			@Override
@@ -418,7 +466,6 @@ public class LibraryFinder implements EntryPoint {
 
 			@Override
 			public void onSuccess(Void result) {
-				// TODO Auto-generated method stub
 				displayFavorite(favoriteLibrary);
 			}
 			
@@ -429,8 +476,6 @@ public class LibraryFinder implements EntryPoint {
 	// MODIFIES: nothing
 	// EFFECTS: removes the library from server
 	private void removeFavorite(final Library favoriteLibrary) {
-		// TODO Auto-generated method stub
-		//makes Async Callback (remove favorite)
 		favoriteService.removeFavorite(favoriteLibrary, new AsyncCallback<Void>() {
 
 			@Override
@@ -448,17 +493,19 @@ public class LibraryFinder implements EntryPoint {
 	}
 	
 	// REQUIRES: library
-	// MODIFIES: nothing
+	// MODIFIES: list of favorite libraries
 	// EFFECTS: removes the library from the local table
 	private void undisplayFavorite(Library favoriteLibrary) {
-		// TODO Auto-generated method stub
+		int removedIndex = favoriteLibraries.indexOf(favoriteLibrary);
+		favoriteLibraries.remove(removedIndex);
+		favoritesTable.removeRow(removedIndex+1);
 		
 	}
 
 	// REQUIRES: list of libraries
 	// MODIFIES: nothing
 	// EFFECTS: put in headings and library information into the table
-	private void displayTable() {	//Y
+	private void displayTable() {
 //		table.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
 		TextColumn<Library> nameColumn = new TextColumn<Library>() {
 			@Override
@@ -496,13 +543,20 @@ public class LibraryFinder implements EntryPoint {
 		};
 		libraryFinderTable.addColumn(postalCodeColumn, "Postal Code");
 		ButtonCell favouriteButton = new ButtonCell();
-		Column buttonColumn = new Column<Library, String>(favouriteButton) {
-			//TODO: link button to add favorite functionality (on click)
+		Column<Library, String> buttonColumn = new Column<Library, String>(favouriteButton) {
 			@Override
 			public String getValue(Library object) {
 				return "+";
 			}
 		};
+		buttonColumn.setFieldUpdater(new FieldUpdater<Library, String>() {
+			@Override
+			public void update(int index, Library object, String value) {
+				addFavoriteLibrary(object);
+			}
+		});
+		
+		
 		libraryFinderTable.addColumn(buttonColumn, "Add To Favourite");
 		libraryFinderTable.setVisibleRange(0, libraries.size());
 		libraryFinderTable.setRowCount(libraries.size(), true);
@@ -550,5 +604,4 @@ public class LibraryFinder implements EntryPoint {
 			Window.Location.replace(loginInfo.getLogoutUrl());
 		}
 	}
-	
 }
