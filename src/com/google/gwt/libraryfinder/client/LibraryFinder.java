@@ -30,6 +30,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -49,6 +50,7 @@ import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSe
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.cell.client.ButtonCell;
 import com.google.gwt.cell.client.FieldUpdater;
+import com.google.gwt.dom.client.Style.Display;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -73,9 +75,9 @@ public class LibraryFinder implements EntryPoint {
 	//private Button logoutButton = new Button("Logout");
 	private Button socialLink = new Button("Facebook"); //this is just a placeholder
 	
-	private Label filterTitle = new Label("Search by City");
+	private Label filterTitle = new Label("Search Map by City");
 	private ListBox libraryFinderFilter = new ListBox();
-	private Label favoritesTitle = new Label("Favorites");
+	private Label favoritesTitle = new Label("Favorite Libraries");
 	private FlexTable favoritesTable = new FlexTable();
 	
 	private Button loadDataButton = new Button("Load Data");
@@ -85,6 +87,7 @@ public class LibraryFinder implements EntryPoint {
 	private HorizontalPanel mapPanel = new HorizontalPanel();
 	private VerticalPanel mapSidePanel = new VerticalPanel();
 	private VerticalPanel mainPanel = new VerticalPanel();
+	private ScrollPanel scrollPanel = new ScrollPanel();
 	
 	// for login/logout page
 	private LoginInfo loginInfo = null;
@@ -158,12 +161,21 @@ public class LibraryFinder implements EntryPoint {
 		makeFavoritesTable();
 
 		loadFavoritesTable();
-		
 
+//		mapSidePanel.setBorderWidth(1);
+		mapSidePanel.addStyleName("mapSidePanel");
+		mapSidePanel.getElement().getStyle().setDisplay(Display.BLOCK);
+		filterTitle.addStyleName("sidebarLabel");
+		favoritesTitle.addStyleName("sidebarLabel");
+		libraryFinderFilter.setWidth("90%");
+		
+		scrollPanel.add(favoritesTable);
+		scrollPanel.setSize("220px", "450px");
+		
 		mapSidePanel.add(filterTitle);
 		mapSidePanel.add(libraryFinderFilter);
 		mapSidePanel.add(favoritesTitle);
-		mapSidePanel.add(favoritesTable);
+		mapSidePanel.add(scrollPanel);
 		
 		mapPanel.add(libraryFinderMap);
 		mapPanel.add(mapSidePanel);
@@ -176,6 +188,8 @@ public class LibraryFinder implements EntryPoint {
 		mainPanel.add(clearDataButton);
 		
 		//Assemble bottom part of panel
+		libraryFinderTableTitle.setStyleName("tableTitle");
+		
 		mainPanel.add(libraryFinderTableTitle);
 		mainPanel.add(libraryFinderTable); 
 		
@@ -364,8 +378,11 @@ public class LibraryFinder implements EntryPoint {
 	//EFFECTS: makes a favorites table and adds style elements
 	private void makeFavoritesTable() {
 		//TODO: make pretty
+		favoritesTable.getRowFormatter().addStyleName(0, "favoritesTableHeader");
+		favoritesTable.getColumnFormatter().setWidth(0, "170px");
 		favoritesTable.setText(0, 0, "Name");
 		favoritesTable.setText(0, 1, "Remove");
+		
 
 	}
 
@@ -405,6 +422,7 @@ public class LibraryFinder implements EntryPoint {
 		int row = favoritesTable.getRowCount();
 		favoriteLibraries.add(favoriteLibrary);
 		String libraryName = favoriteLibrary.getName();
+		favoritesTable.getCellFormatter().addStyleName(row, 1, "removeButtonColumn");
 		
 		favoritesTable.setText(row, 0, libraryName);
 		
