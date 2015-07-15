@@ -37,3 +37,27 @@ h1 {
 #closeButton {
   margin: 15px 6px 6px;
 }
+
+#loginButton {
+	  display: inline-block;
+      background: #4285f4;
+      color: white;
+      width: 120px;
+      border-radius: 5px;
+      white-space: nowrap;
+      border-right: #2265d4 1px solid;
+      padding-left: 42px;
+      padding-right: 42px;
+      font-size: 13px;
+      font-weight: bold;
+      Use the Roboto font that is loaded in the <head>
+      font-family: 'Roboto', sans-serif;
+      vertical-align: middle;       
+}
+
+/* .backgroundImage { 
+    background-image: url('war/images/rewind-illuminated-texts-the-morgan-library-new-york-ny-rectangle.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center; 
+}   */

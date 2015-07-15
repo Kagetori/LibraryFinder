@@ -12,7 +12,7 @@
     <!-- Consider inlining CSS to reduce the number of requested files -->
     <!--                                                               -->
     <link type="text/css" rel="stylesheet" href="LibraryFinder.css">
-
+ 
     <!--                                           -->
     <!-- Any title is fine                         -->
     <!--                                           -->
@@ -26,14 +26,17 @@
     
     
     
-<!-- 	<meta name="google-signin-scope" content="profile email"> 
-    <meta name="google-signin-client_id" content="540255793876-jr8d6ljupdea86b9lt52rsbo87pduik5.apps.googleusercontent.com">
-    <script src="https://apis.google.com/js/platform.js" async defer></script> -->
+<!--   	<meta name="google-signin-scope" content="profile email">  
+    <meta name="google-signin-client_id" content="540255793876-jr8d6ljupdea86b9lt52rsbo87pduik5.apps.googleusercontent.com">   -->
     
-    
-    
+    <script src="https://apis.google.com/js/platform.js" async defer></script> 
+
+
     <script type="text/javascript" language="javascript" src="libraryfinder/libraryfinder.nocache.js"></script>
     <script src="http://maps.google.com/maps?gwt=1&file=api&v=2&sensor=false"></script>
+  
+
+  
   </head>
 
   <!--                                           -->
@@ -44,26 +47,34 @@
   <body>
 
 <div id="fb-root"></div>
-<script>(function(d, s, id) {
+ <script>(function(d, s, id) {
   var js, fjs = d.getElementsByTagName(s)[0];
   if (d.getElementById(id)) return;
   js = d.createElement(s); js.id = id;
   js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.4";
   fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
+}(document, 'script', 'facebook-jssdk'));
+</script> 
+
+<script type="text/javascript">
+	(function() {
+		var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+		po.src = 'https://apis.google.com/js/plusone.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+	})();
+</script> 
 
 
 	<h1>Library Finder</h1>
-	
-	<div class="fb-share-button" data-href="http://1-dot-libraryfinder-1000.appspot.com" data-layout="icon"></div>
+	   
+ 	<div id="libraryFinder"></div> 
   
-  <div id="libraryFinder"></div>
-  
-  
-  
-  
-<!-- <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
-  <script>
+    <div id="loginButton"></div>
+    
+<!--   	<img src="images/rewind-illuminated-texts-the-morgan-library-new-york-ny-rectangle.jpg" />
+ -->  	
+<!--     <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>  
+ --><!--    <script>
       function onSignIn(googleUser) {
         // Useful data for your client-side scripts:
         var profile = googleUser.getBasicProfile();
@@ -76,9 +87,12 @@
         var id_token = googleUser.getAuthResponse().id_token;
         console.log("ID Token: " + id_token);
       };
-   </script> -->	
+   </script>   --> 
    
-<!--    <a href="#" onclick="signOut();">Sign out</a>
+   
+
+   
+<!--     <a href="#" onclick="signOut();">Sign out</a>
 	<script>
   	function signOut() {
     	var auth2 = gapi.auth2.getAuthInstance();
@@ -86,7 +100,7 @@
       		console.log('User signed out.');
     	});
   	}
-	</script>   -->
+	</script>   --> 
 
 
 

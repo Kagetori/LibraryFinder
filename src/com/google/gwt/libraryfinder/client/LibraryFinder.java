@@ -23,6 +23,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -59,9 +60,7 @@ public class LibraryFinder implements EntryPoint {
 	private Label libraryFinderTableTitle = new Label("Table of Libraries");
 	private CellTable<Library> libraryFinderTable = new CellTable<Library>();							//Y
 	
-	private Label userEmail = new Label("User Email");
-	//private Button logoutButton = new Button("Logout");
-	private Button socialLink = new Button("Facebook"); //this is just a placeholder
+	//private Label userEmail = new Label("User Email");
 	
 	private Label filterTitle = new Label("Search by City");
 	private ListBox libraryFinderFilter = new ListBox();
@@ -82,8 +81,8 @@ public class LibraryFinder implements EntryPoint {
 	private LoginInfo loginInfo = null;
 	private VerticalPanel loginPanel = new VerticalPanel();
 	private Label loginLabel = new Label("Please log in to your Google Account to access the LibraryFinder application.");
-	private Anchor loginButton = new Anchor("Log In");
-	private Anchor logoutButton = new Anchor("Log Out");
+	private Button loginButton = new Button("Log In");
+	private Button logoutButton = new Button("Log Out");
 	
 	/**
 	 * Entry point method.
@@ -111,21 +110,21 @@ public class LibraryFinder implements EntryPoint {
 	//MODIFIES: nothing
 	//EFFECTS: assembles login page
 	private void loadLogin() {	
-		loginButton.setHref(loginInfo.getLoginUrl());
+		loginButton.getElement().setId("loginButton");		
 		
 		//Assemble login panel
 		loginPanel.add(loginLabel);
 		loginPanel.add(loginButton);
+		//loginPanel.add(new HTMLPanel("<div class=\"g-signin2\" data-onsuccess=\"onSignIn\" data-theme=\"dark\"></div>"));
 		
 		//Associate panel with html page
-		RootPanel.get().add(loginPanel);
+		RootPanel.get("libraryFinder").add(loginPanel);
 		
 		//Link login button to Google Account Sign-In Page 
-		loginButton.addClickHandler(new ClickHandler() {
+		loginButton.addClickHandler( new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				
-				//Window.Location.assign("https://accounts.google.com");
-			}
+				Window.Location.assign(loginInfo.getLoginUrl());
+			}	
 		});
 	}
 
@@ -140,12 +139,10 @@ public class LibraryFinder implements EntryPoint {
 		//Assemble panel for email, logout, facebook
 		buttonsPanel.addStyleName("buttonToRight");
 		
-		buttonsPanel.add(userEmail);
+		buttonsPanel.add(new Label(loginInfo.getEmailAddress()));
 		buttonsPanel.add(logoutButton);
-		
-		//TODO: insert facebook(?) icon
-		//on click calls shareOnSocialMedia
-		buttonsPanel.add(socialLink); //just a placeholder
+		buttonsPanel.add(new HTMLPanel("<div class=\"fb-share-button\" data-href=\"http://1-dot-libraryfinder-1000.appspot.com\" data-layout=\"button\"></div>"));
+		buttonsPanel.add(new HTMLPanel("<g:plus action=\"share\" annotation=\"none\"></g:plus>"));
 		
 		//TODO: makes favorites table 
 		makeFavoritesTable();
@@ -166,9 +163,11 @@ public class LibraryFinder implements EntryPoint {
 		mainPanel.add(buttonsPanel);
 		mainPanel.add(mapPanel); 
 		
-		//TODO: can only see these if admin~!
-		mainPanel.add(loadDataButton);
-		mainPanel.add(clearDataButton);
+		// only admins can see these buttons
+		if (loginInfo.getEmailAddress() == "phoebeyu7@gmail.com" || loginInfo.getEmailAddress() == "yukiwongky@gmail.com" || loginInfo.getEmailAddress() == "meng.tian401@gmail.com") {
+			mainPanel.add(loadDataButton);
+			mainPanel.add(clearDataButton);
+		}
 		
 		//Assemble bottom part of panel
 		mainPanel.add(libraryFinderTableTitle);
@@ -176,6 +175,10 @@ public class LibraryFinder implements EntryPoint {
 		
 		//Associate panels with html page
 		RootPanel.get("libraryFinder").add(mainPanel);
+		
+		//Set background image
+		//mainPanel.setStyleName("backgroundImage");
+		//mainPanel.getElement().getStyle().setBackgroundImage("images/rewind-illuminated-texts-the-morgan-library-new-york-ny-rectangle.jpg");
 		
 		//Link load data button to parser 
 		loadDataButton.addClickHandler(new ClickHandler() {
@@ -193,8 +196,7 @@ public class LibraryFinder implements EntryPoint {
 		//Link logout button to Google Account Sign-In Page 
 		logoutButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				logoutButton.setHref(loginInfo.getLogoutUrl());
-				//Window.Location.assign("https://accounts.google.com/ServiceLogin?sacu=1&service=mail#identifier");
+				Window.Location.assign(loginInfo.getLogoutUrl());
 			}
 		});
 	}	
@@ -537,13 +539,6 @@ public class LibraryFinder implements EntryPoint {
 				Window.alert("All saved libraries have been deleted!");
 			}
 		});
-	}
-	
-	//REQUIRES: nothing
-	//MODIFIES: nothing
-	//EFFECTS: shows either a new page or pop-up window so that user can share Library Finder on social media	
-	public void shareOnSocialMedia()  {
-		// TODO: 
 	}
 	
 	//REQUIRES: a throwable error
