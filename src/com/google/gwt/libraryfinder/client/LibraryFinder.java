@@ -438,9 +438,15 @@ public class LibraryFinder implements EntryPoint {
 		favoriteLibraries.add(favoriteLibrary);
 		String libraryName = favoriteLibrary.getName();
 		favoritesTable.getCellFormatter().addStyleName(row, 1, "removeButtonColumn");
-		
-		favoritesTable.setText(row, 0, libraryName);
-		
+		Label libraryLabel = new Label(libraryName);
+		libraryLabel.addClickHandler(new ClickHandler(){
+			@Override
+			public void onClick(ClickEvent event) {
+				// TODO Auto-generated method stub
+				goToLibraryOnMap(favoriteLibrary);
+			}
+		});
+		favoritesTable.setWidget(row, 0, libraryLabel);
 		//add the "remove" button
 		Button removeFavoriteButton = new Button("X");
 		removeFavoriteButton.addClickHandler(new ClickHandler() {
@@ -453,6 +459,14 @@ public class LibraryFinder implements EntryPoint {
 		});
 		
 		favoritesTable.setWidget(row, 1, removeFavoriteButton);
+//		favoritesTable.addClickHandler(new ClickHandler(){
+//
+//			@Override
+//			public void onClick(ClickEvent event) {
+//				String cityName = favoritesTable.getText
+//			}
+//			
+//		});
 	}
 	
 	//REQUIRES: valid library
@@ -550,16 +564,6 @@ public class LibraryFinder implements EntryPoint {
 			@Override
 			public void update(int index, Library object, String value) {
 				goToLibraryOnMap(object);
-//				Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-//					
-//					@Override
-//					public void execute() {
-//						((FocusWidget) mapPanel).setFocus(true);
-//						
-//					}
-//				});
-//				libraryFinderTable.getElement().focus();
-//				Window.scrollTo(0,0);
 			}
 		});
 		
@@ -644,6 +648,8 @@ public class LibraryFinder implements EntryPoint {
 		List<Library> oneLibrary = new ArrayList<Library>();
 		oneLibrary.add(l);
 		populateMap(oneLibrary);
+		libraryFinderMap.getElement().setAttribute("tabindex", "0");
+		libraryFinderMap.getElement().focus();
 	}
 
 	//REQUIRES: nothing
