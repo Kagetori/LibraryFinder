@@ -55,6 +55,7 @@ import com.google.gwt.cell.client.ButtonCell;
 public class LibraryFinder implements EntryPoint {
 	
 	private List<Library> libraries = new ArrayList<Library>();
+	private List<Library> favoriteLibraries = new ArrayList<Library>();
 	
 	// for library service
 	private final LibraryServiceAsync libraryService = GWT.create(LibraryService.class);
@@ -159,7 +160,6 @@ public class LibraryFinder implements EntryPoint {
 		makeFavoritesTable();
 		
 		//TODO: loads favorites table
-
 		loadFavoritesTable();
 		
 
@@ -369,15 +369,27 @@ public class LibraryFinder implements EntryPoint {
 		//placeholder
 		favoritesTable.setText(0, 0, "Name");
 		favoritesTable.setText(0, 1, "Remove");
-//		favoritesTable.setText(1, 0, "Library Name");
-//		favoritesTable.setText(1, 1, "Button");
+		
+		//TODO: DELETE THIS LATER!!
+		LatLon ll1 = new LatLon(49.274931, -123.070318);
+		Library l1 = new Library("Britannia", "Vancouver", "1661 Napier", "V5L 4X4", "(604) 665-2222", ll1);
+		LatLon ll2 = new LatLon(54.014086, -124.008737);
+		Library l2 = new Library("Vanderhoof", "Vanderhoof", "230 Stewart Drive", "V0J 3A0", "(250) 567-4060", ll2);
+		LatLon ll3 = new LatLon(49.329034, -123.16538);
+		Library l3 = new Library("West Vancouver", "West Vancouver", "1950 Marine Drive", "V7V 1J8", "(604) 925-7400", ll3);
+		LatLon ll4 = new LatLon(50.117127, -122.956295);
+		Library l4 = new Library("Whistler", "Whistler", "4329 Main Street", "V0N 1B4", "(604) 935-8433", ll4);
+		
+		addFavoriteLibrary(l1);
+		addFavoriteLibrary(l2);
+		addFavoriteLibrary(l3);
+		addFavoriteLibrary(l2);
 
 	}
 
 	// REQUIRES: nothing
 	// MODIFIES: nothing
-	// EFFECTS: gets list of favorites and display them on success 
-	//(calls displayFavoritesTable)
+	// EFFECTS: gets list of favorites from server and display them on success 
 	private void loadFavoritesTable() {
 		favoriteService.getFavorites(new AsyncCallback<List<Library>>() {
 
@@ -405,20 +417,38 @@ public class LibraryFinder implements EntryPoint {
 	}
 
 	// REQUIRES: library
-	// MODIFIES: nothing
+	// MODIFIES: list of favorite libraries
 	// EFFECTS: displays the library
 	private void displayFavorite(final Library favoriteLibrary) {
-		// TODO: put into table
+		int row = favoritesTable.getRowCount();
+		favoriteLibraries.add(favoriteLibrary);
+		String libraryName = favoriteLibrary.getName();
 		
-		//remember to add the "remove" button
+		favoritesTable.setText(row, 0, libraryName);
+		
+		//add the "remove" button
 		Button removeFavoriteButton = new Button("X");
 		removeFavoriteButton.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
+				//int rowIndex = favoritesTable.getCellForEvent(event).getRowIndex();
 				removeFavorite(favoriteLibrary);
 			}
 		});
+		
+		favoritesTable.setWidget(row, 1, removeFavoriteButton);
+	}
+	
+	//REQUIRES: valid library
+	//MODIFIES: nothing
+	//EFFECTS: returns a window alert if library is already in favorites, adds library if it is not
+	private void addFavoriteLibrary(Library library) {
+		if(hasDuplicate(library)){
+			Window.alert("Library is already in favorites!");
+		} else {
+			addFavorite(library);
+		}
 	}
 	
 	// REQUIRES: nothing
@@ -426,18 +456,44 @@ public class LibraryFinder implements EntryPoint {
 	// EFFECTS: checks server for duplicates and calls addFavorite
 	//note: wait for Yuki. Also, may make into checkDuplicate helper method.
 	//Will need to somehow figure out which library we are looking at from table/box in map
-	private void addFavorite() {
-		// TODO Auto-generated method stub
-		//makes Async Callback (get favorites)
+	private boolean hasDuplicate(Library library) {
+		final String libraryName = library.getName();
+		Boolean hasDuplicate = false;
 		
+		for(Library l: favoriteLibraries) {
+			if(l.getName().equals(libraryName)) {
+				hasDuplicate = true;
+			}
+		}
+		
+		return hasDuplicate;
+		
+//		boolean inFavorites = false;
+//		favoriteService.getFavorites(new AsyncCallback<List<Library>>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				Window.alert("Failed to check for duplicate libraries!");
+//				
+//			}
+//
+//			@Override
+//			public void onSuccess(List<Library> result) {
+//				for(Library l: result) {
+//					if(l.getName().equals(libraryName)) {
+//					}
+//				}
+//				
+//			}
+//			
+//		});
+//		
 	}
 	
 	// REQUIRES: library
 	// MODIFIES: nothing
 	// EFFECTS: adds the library to the server and calls displayFavorite
 	private void addFavorite(final Library favoriteLibrary) {
-		// TODO Auto-generated method stub
-		//makes Async Callback (add favorite)
 		favoriteService.addFavorite(favoriteLibrary, new AsyncCallback<Void>() {
 
 			@Override
@@ -447,7 +503,6 @@ public class LibraryFinder implements EntryPoint {
 
 			@Override
 			public void onSuccess(Void result) {
-				// TODO Auto-generated method stub
 				displayFavorite(favoriteLibrary);
 			}
 			
@@ -458,8 +513,6 @@ public class LibraryFinder implements EntryPoint {
 	// MODIFIES: nothing
 	// EFFECTS: removes the library from server
 	private void removeFavorite(final Library favoriteLibrary) {
-		// TODO Auto-generated method stub
-		//makes Async Callback (remove favorite)
 		favoriteService.removeFavorite(favoriteLibrary, new AsyncCallback<Void>() {
 
 			@Override
@@ -469,6 +522,7 @@ public class LibraryFinder implements EntryPoint {
 
 			@Override
 			public void onSuccess(Void result) {
+				//favoritesTable.removeRow(rowIndex);
 				undisplayFavorite(favoriteLibrary);
 			}
 			
@@ -477,10 +531,12 @@ public class LibraryFinder implements EntryPoint {
 	}
 	
 	// REQUIRES: library
-	// MODIFIES: nothing
+	// MODIFIES: list of favorite libraries
 	// EFFECTS: removes the library from the local table
 	private void undisplayFavorite(Library favoriteLibrary) {
-		// TODO Auto-generated method stub
+		int removedIndex = favoriteLibraries.indexOf(favoriteLibrary);
+		favoriteLibraries.remove(removedIndex);
+		favoritesTable.removeRow(removedIndex+1);
 		
 	}
 
@@ -586,5 +642,4 @@ public class LibraryFinder implements EntryPoint {
 			Window.Location.replace(loginInfo.getLogoutUrl());
 		}
 	}
-	
 }
