@@ -62,12 +62,11 @@ import com.google.gwt.dom.client.Style.Unit;
  */
 public class LibraryFinder implements EntryPoint {
 	
-	private List<Library> libraries = new ArrayList<Library>();
-	private List<Library> favoriteLibraries = new ArrayList<Library>();
-	
-	// for library service
 	private final LibraryServiceAsync libraryService = GWT.create(LibraryService.class);
 	private final FavoriteServiceAsync favoriteService = GWT.create(FavoriteService.class);
+	
+	private List<Library> libraries = new ArrayList<Library>();
+	private List<Library> favoriteLibraries = new ArrayList<Library>();
 	
 	private LatLon VancouverLatLon = new LatLon(49.2827, -123.1207);
 	private LatLng latLngInVancouver = LatLng.newInstance(49.2827, -123.1207);
@@ -76,8 +75,6 @@ public class LibraryFinder implements EntryPoint {
 	private InfoWindow info = null;
 	private Label libraryFinderTableTitle = new Label("Table of Libraries");
 	private CellTable<Library> libraryFinderTable = new CellTable<Library>();
-	
-	//private Label userEmail = new Label("User Email");
 	
 	private Label filterTitle = new Label("Search Map by City");
 	private ListBox libraryFinderFilter = new ListBox();
@@ -172,7 +169,6 @@ public class LibraryFinder implements EntryPoint {
 
 		loadFavoritesTable();
 
-//		mapSidePanel.setBorderWidth(1);
 		mapSidePanel.addStyleName("mapSidePanel");
 		mapSidePanel.getElement().getStyle().setDisplay(Display.BLOCK);
 		filterTitle.addStyleName("sidebarLabel");
@@ -459,15 +455,16 @@ public class LibraryFinder implements EntryPoint {
 		favoriteLibraries.add(favoriteLibrary);
 		String libraryName = favoriteLibrary.getName();
 		favoritesTable.getCellFormatter().addStyleName(row, 1, "removeButtonColumn");
+		
 		Label libraryLabel = new Label(libraryName);
 		libraryLabel.addClickHandler(new ClickHandler(){
 			@Override
 			public void onClick(ClickEvent event) {
-				// TODO Auto-generated method stub
 				goToLibraryOnMap(favoriteLibrary);
 			}
 		});
 		favoritesTable.setWidget(row, 0, libraryLabel);
+		
 		//add the "remove" button
 		Button removeFavoriteButton = new Button("X");
 		removeFavoriteButton.addClickHandler(new ClickHandler() {
@@ -501,15 +498,13 @@ public class LibraryFinder implements EntryPoint {
 	private boolean hasDuplicate(Library library) {
 		final String libraryName = library.getName();
 		Boolean hasDuplicate = false;
-		
+
 		for(Library l: favoriteLibraries) {
 			if(l.getName().equals(libraryName)) {
 				hasDuplicate = true;
 			}
 		}
-		
 		return hasDuplicate;
-
 	}
 	
 	// REQUIRES: library
@@ -527,7 +522,6 @@ public class LibraryFinder implements EntryPoint {
 			public void onSuccess(Void result) {
 				displayFavorite(favoriteLibrary);
 			}
-			
 		});
 	}
 	
@@ -546,9 +540,7 @@ public class LibraryFinder implements EntryPoint {
 			public void onSuccess(Void result) {
 				undisplayFavorite(favoriteLibrary);
 			}
-			
 		});
-		
 	}
 	
 	// REQUIRES: library
@@ -558,7 +550,6 @@ public class LibraryFinder implements EntryPoint {
 		int removedIndex = favoriteLibraries.indexOf(favoriteLibrary);
 		favoriteLibraries.remove(removedIndex);
 		favoritesTable.removeRow(removedIndex+1);
-		
 	}
 
 	// REQUIRES: nothing
@@ -655,7 +646,6 @@ public class LibraryFinder implements EntryPoint {
 	// MODIFIES: libraries
 	// EFFECTS: sort libraries by branch names
 	public void sortLibraryByName(List<Library> libraries){
-		//TODO
 		Collections.sort(libraries, new Comparator<Library>() {
 			@Override
 			public int compare(Library a, Library b) {

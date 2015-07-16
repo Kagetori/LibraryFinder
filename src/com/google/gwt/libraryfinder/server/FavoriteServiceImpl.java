@@ -17,11 +17,11 @@ import com.google.gwt.libraryfinder.shared.Library;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class FavoriteServiceImpl extends RemoteServiceServlet implements FavoriteService {
-	
+
 	private static final PersistenceManagerFactory PMF = 
 			JDOHelper.getPersistenceManagerFactory("transactions-optional");
-	
-	
+
+
 	//REQUIRES: nothing
 	//MODIFIES: nothing
 	//EFFECTS: returns list of favorite libraries from server
@@ -30,21 +30,19 @@ public class FavoriteServiceImpl extends RemoteServiceServlet implements Favorit
 		checkLoggedIn();
 		PersistenceManager pm = PMF.getPersistenceManager();
 		List<Library> favoriteLibraries = new ArrayList<Library>();
-		
+
 		try {
 			Query q = pm.newQuery(Favorite.class, "user == u");
 			q.declareParameters("com.google.appengine.api.users.User u");
 			List<Favorite> favorites = (List<Favorite>) q.execute(getUser());
-			
+
 			for(Favorite f: favorites) {
 				Library l = f.getLibrary();
 				favoriteLibraries.add(l);
 			}
-			
 		} finally {
 			pm.close();
 		}
-
 		return favoriteLibraries;
 	}
 
@@ -56,12 +54,12 @@ public class FavoriteServiceImpl extends RemoteServiceServlet implements Favorit
 		checkLoggedIn();
 		PersistenceManager pm = PMF.getPersistenceManager();
 		String deleteName = favoriteLibrary.getName();
-		
+
 		try {
 			Query q = pm.newQuery(Favorite.class, "user == u");
 			q.declareParameters("com.google.appengine.api.users.User u");
 			List<Favorite> favorites = (List<Favorite>) q.execute(getUser());
-			
+
 			for(Favorite f: favorites) {
 				Library l = f.getLibrary();
 				if(l.getName().equals(deleteName)) {
@@ -71,7 +69,6 @@ public class FavoriteServiceImpl extends RemoteServiceServlet implements Favorit
 		} finally {
 			pm.close();
 		}
-		
 	}
 
 	//REQUIRES: valid library
@@ -82,7 +79,7 @@ public class FavoriteServiceImpl extends RemoteServiceServlet implements Favorit
 		checkLoggedIn();
 		PersistenceManager pm = PMF.getPersistenceManager();
 		Favorite favorite = new Favorite(getUser(), favoriteLibrary);
-		
+
 		try {
 			pm.makePersistent(favorite);
 		} catch (Exception e) {
@@ -106,5 +103,4 @@ public class FavoriteServiceImpl extends RemoteServiceServlet implements Favorit
 		UserService userService = UserServiceFactory.getUserService();
 		return userService.getCurrentUser();
 	}
-
 }
