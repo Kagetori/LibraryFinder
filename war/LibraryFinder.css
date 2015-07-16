@@ -3,11 +3,13 @@
 
 /** Example rules used by the template application (remove for your app) */
 h1 {
-  font-size: 2.2em;
+  font-size: 2.8em; 
   font-weight: bold;
-  color: #777777;
-  margin: 40px 0px 30px;
+  color: #999999;
+  margin: 40px 0px 40px;
   text-align: center;
+  z-index: 100;
+  position: relative; 
 }
 
 .mapSidePanel {
@@ -75,25 +77,64 @@ h1 {
 }
 
 #loginButton {
+	  margin: -150px 120px 0px;
 	  display: inline-block;
       background: #4285f4;
       color: white;
-      width: 120px;
+      width: 130px;
       border-radius: 5px;
       white-space: nowrap;
       border-right: #2265d4 1px solid;
       padding-left: 42px;
       padding-right: 42px;
-      font-size: 13px;
+      font-size: 15px;
       font-weight: bold;
       Use the Roboto font that is loaded in the <head>
       font-family: 'Roboto', sans-serif;
-      vertical-align: middle;       
+      vertical-align: middle;  
+      position: fixed;     
 }
 
-/* .backgroundImage { 
-    background-image: url('war/images/rewind-illuminated-texts-the-morgan-library-new-york-ny-rectangle.jpg');
+.logoutButton {
+	margin: 0px 5px 7px;
+	font-size: 11px;
+	height: 21px; 
+	width: 72px;
+	background: #4285f4; 
+	color: white;
+	border-right: #2265d4 0px solid;
+	Use: "Roboto", sans-serif;
+	horizoncal-align: middle;
+	border-radius: 5px;
+	font-weight: bold;
+}
+
+.loginLabel {
+	margin-top: -200px;
+ 	margin-left: -107px;
+	margin-right: -106px; 
+	font-size: 13pt;
+	color: #ffffff;
+	float: center;
+} 
+
+
+.backgroundImage { 
+    background-image: url('images/shutterstock_87330377.jpg');
     background-repeat: no-repeat;
     background-attachment: fixed;
+    position: fixed;
     background-position: center; 
-}   */
+ 	padding:457px;  
+/* 	background-size: 1250px 700px; padding: 500px;
+ */	background-size: cover;
+ 	top: 0;
+	left: 0;  
+}   
+
+/* .mainBackground {
+	background-color: #999999;
+	background-size: cover;
+	top: 0;
+	left: 0;
+} */

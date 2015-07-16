@@ -121,11 +121,16 @@ public class LibraryFinder implements EntryPoint {
 	//EFFECTS: assembles login page
 	private void loadLogin() {	
 		loginButton.getElement().setId("loginButton");		
+		loginLabel.setStyleName("loginLabel");
 		
 		//Assemble login panel
 		loginPanel.add(loginLabel);
 		loginPanel.add(loginButton);
 		//loginPanel.add(new HTMLPanel("<div class=\"g-signin2\" data-onsuccess=\"onSignIn\" data-theme=\"dark\"></div>"));
+		
+		//Set background image
+		loginPanel.setStyleName("backgroundImage");
+		loginPanel.getElement().getStyle().setBackgroundImage("war/images/shutterstock_87330377.jpg");
 		
 		//Associate panel with html page
 		RootPanel.get("libraryFinder").add(loginPanel);
@@ -179,6 +184,9 @@ public class LibraryFinder implements EntryPoint {
 		mainPanel.add(buttonsPanel);
 		mainPanel.add(mapPanel); 
 		
+		//Set main page background style name
+		mainPanel.setStyleName("mainBackground");
+		
 		// only admins can see these buttons
 		if (loginInfo.getEmailAddress() == "phoebeyu7@gmail.com" || loginInfo.getEmailAddress() == "yukiwongky@gmail.com" || loginInfo.getEmailAddress() == "meng.tian401@gmail.com") {
 			mainPanel.add(loadDataButton);
@@ -194,10 +202,6 @@ public class LibraryFinder implements EntryPoint {
 		//Associate panels with html page
 		RootPanel.get("libraryFinder").add(mainPanel);
 		
-		//Set background image
-		//mainPanel.setStyleName("backgroundImage");
-		//mainPanel.getElement().getStyle().setBackgroundImage("images/rewind-illuminated-texts-the-morgan-library-new-york-ny-rectangle.jpg");
-		
 		//Link load data button to parser 
 		loadDataButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
@@ -212,6 +216,7 @@ public class LibraryFinder implements EntryPoint {
 		});
 		
 		//Link logout button to Google Account Sign-In Page 
+		logoutButton.setStyleName("logoutButton");
 		logoutButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				Window.Location.assign(loginInfo.getLogoutUrl());
