@@ -18,6 +18,7 @@ import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.libraryfinder.client.NotLoggedInException;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
@@ -649,7 +650,14 @@ public class LibraryFinder implements EntryPoint {
 		oneLibrary.add(l);
 		populateMap(oneLibrary);
 		libraryFinderMap.getElement().setAttribute("tabindex", "0");
-		libraryFinderMap.getElement().focus();
+		Timer timer = new Timer(){
+
+			@Override
+			public void run() {
+				libraryFinderMap.getElement().focus();
+			}
+		};
+		timer.schedule(50);
 	}
 
 	//REQUIRES: nothing
