@@ -55,6 +55,7 @@ import com.google.gwt.cell.client.ButtonCell;
 import com.google.gwt.cell.client.ClickableTextCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.dom.client.Style.Display;
+import com.google.gwt.dom.client.Style.Unit;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -68,6 +69,7 @@ public class LibraryFinder implements EntryPoint {
 	private final LibraryServiceAsync libraryService = GWT.create(LibraryService.class);
 	private final FavoriteServiceAsync favoriteService = GWT.create(FavoriteService.class);
 	
+	private LatLon VancouverLatLon = new LatLon(49.2827, -123.1207);
 	private LatLng latLngInVancouver = LatLng.newInstance(49.2827, -123.1207);
 	private int defaultZoom = 11;
 	private MapWidget libraryFinderMap = new MapWidget(latLngInVancouver, defaultZoom);
@@ -257,21 +259,22 @@ public class LibraryFinder implements EntryPoint {
 		
 	}
 
-	// REQUIRES: list of libraries
+	// REQUIRES: nothing
 	// MODIFIES: nothing
-	// EFFECTS: display, centralize, put icons on map
+	// EFFECTS: display map, set size and add control
 	private void displayMap() {	
-		
 		libraryFinderMap.setSize("1000px", "600px");
 		libraryFinderMap.addControl(new LargeMapControl());
-		
 	}
 	
+	// REQUIRES: List<Library>
+	// MODIFIES: nothing
+	// EFFECTS: center map to the first library of the list
+	//          and add markers into map based on the lat lon of the libraries
 	public void populateMap(List<Library> libraries) {
 		libraryFinderMap.clearOverlays();
 		LatLon centralizeLatLon = libraries.get(0).getLatLon();
 		if (this.libraries.size() == libraries.size()){
-			LatLon VancouverLatLon = new LatLon(49.2827, -123.1207);
 			centralizeLatLon = VancouverLatLon;
 		}
 		LatLng centralizeLatLng = LatLng.newInstance(centralizeLatLon.getLat(), centralizeLatLon.getLon());
@@ -282,6 +285,10 @@ public class LibraryFinder implements EntryPoint {
 		}
 	}
 	
+	// REQUIRES: Library
+	// MODIFIES: nothing
+	// EFFECTS: returns a marker at the lat lon of a given library
+	//          infoWindow shows when marker is clicked
 	public Marker constructMarker(final Library l) {
 		LatLon latLon = l.getLatLon();
 		LatLng latLng = LatLng.newInstance(latLon.getLat(), latLon.getLon());
@@ -299,6 +306,9 @@ public class LibraryFinder implements EntryPoint {
 		return marker;
 	}
 	
+	// REQUIRES: Library
+	// MODIFIES: nothing
+	// EFFECTS: returns infoWindowContent with information string and favorite button
 	public InfoWindowContent getInfoWindowContent(final Library library) {
 		final String infoWindowString = getInfoWindowString(library);
 		Button favoriteButton = new Button("Add to favorite");
@@ -314,12 +324,15 @@ public class LibraryFinder implements EntryPoint {
 		return content;
 	}
 	
+	// REQUIRES: Library
+	// MODIFIES: nothing
+	// EFFECTS: returns an string of library information with proper format
 	public String getInfoWindowString(Library l) {
 		String contentString = "<b>" + l.getName() + " library</b>" + "<br />" + l.getAddress() + "<br />" + l.getCity() + ", BC  " + l.getPostalCode() + "<br />" + l.getPhone() + "<br />" + "<br />";
 		return contentString;
 	}
 
-	// REQUIRES: list of libraries (from field) and a city name
+	// REQUIRES: city name
 	// MODIFIES: nothing
 	// EFFECTS: returns a list of libraries filtered by city
 	private List<Library> filterLibraries(String city) {
@@ -336,19 +349,19 @@ public class LibraryFinder implements EntryPoint {
 		}
 	}
 	
-	//EFFECTS: refreshes the map according to the filter option
-	//this method is call when user select city from filter
+	// REQUIRES: index of filter menu
+	// MODIFIES: nothing
+	// EFFECTS: refreshes the map and table according to the filter option
 	private void refresh(int index) {
 		String city = libraryFinderFilter.getItemText(index);
 		List<Library> filteredLibraries = filterLibraries(city);
 		populateMap(filteredLibraries);
 		populateTable(filteredLibraries);
-		//TODO: implement method
 	}
 	
-	// REQUIRES: list of libraries
+	// REQUIRES: nothing
 	// MODIFIES: nothing
-	// EFFECTS: displays the drop-down filter menu
+	// EFFECTS: displays the drop-down filter menu filled with BC city names
 	private void displayFilterMenu() {
 		libraryFinderFilter.clear();
 		libraryFinderFilter.addItem("Show All");
@@ -364,8 +377,9 @@ public class LibraryFinder implements EntryPoint {
 		});
 	}
 	
+	// REQUIRES: nothing
+	// MODIFIES: nothing
 	// EFFECTS: return a list of city names from the global libraries field with no duplication
-	// TODO: write tests
 	private List<String> getCityNames() {
 		List<String> cityNames = new ArrayList<String>();
 		for (Library l: libraries) {
@@ -377,8 +391,9 @@ public class LibraryFinder implements EntryPoint {
 		return cityNames;
 	}
 	
-	// EFFECTS: returns true if city is found in cities, otherwise return false
-	// TODO: write tests
+	// REQUIRES: List<city name>, city name
+	// MODIFIES: nothing
+	// EFFECTS: returns true if city is found in list of city, otherwise return false
 	private boolean duplicateCity(List<String> cities, String city){
 		boolean duplicated = false;
 		for (String c: cities) {
@@ -460,14 +475,6 @@ public class LibraryFinder implements EntryPoint {
 		});
 		
 		favoritesTable.setWidget(row, 1, removeFavoriteButton);
-//		favoritesTable.addClickHandler(new ClickHandler(){
-//
-//			@Override
-//			public void onClick(ClickEvent event) {
-//				String cityName = favoritesTable.getText
-//			}
-//			
-//		});
 	}
 	
 	//REQUIRES: valid library
@@ -549,9 +556,9 @@ public class LibraryFinder implements EntryPoint {
 		
 	}
 
-	// REQUIRES: list of libraries
+	// REQUIRES: nothing
 	// MODIFIES: nothing
-	// EFFECTS: put in headings and library information into the table
+	// EFFECTS: put in headings into the table
 	private void displayTable() {
 		Column<Library, String> nameColumn = new Column<Library, String>(new ClickableTextCell()) {
 			@Override
@@ -559,15 +566,12 @@ public class LibraryFinder implements EntryPoint {
 				return object.getName();
 			}
 		};
-		
 		nameColumn.setFieldUpdater(new FieldUpdater<Library, String>(){
-
 			@Override
 			public void update(int index, Library object, String value) {
 				goToLibraryOnMap(object);
 			}
 		});
-		
 		libraryFinderTable.addColumn(nameColumn, "Branch Name");
 		TextColumn<Library> phoneColumn = new TextColumn<Library>() {
 			@Override
@@ -610,11 +614,18 @@ public class LibraryFinder implements EntryPoint {
 				addFavoriteLibrary(object);
 			}
 		});
-		
-		
 		libraryFinderTable.addColumn(buttonColumn, "Add To Favourite");
+		libraryFinderTable.setColumnWidth(nameColumn, 215, Unit.PX);
+		libraryFinderTable.setColumnWidth(phoneColumn, 117, Unit.PX);
+		libraryFinderTable.setColumnWidth(addressColumn, 302, Unit.PX);
+		libraryFinderTable.setColumnWidth(cityColumn, 136, Unit.PX);
+		libraryFinderTable.setColumnWidth(postalCodeColumn, 90, Unit.PX);
+		libraryFinderTable.setColumnWidth(buttonColumn, 117, Unit.PX);
 	}
 	
+	// REQUIRES: libraries
+	// MODIFIES: void
+	// EFFECTS: fill library finder table with library information
 	public void populateTable(List<Library> libraries){
 		sortLibraryByName(libraries);
 		sortLibraryByCity(libraries);
@@ -623,6 +634,9 @@ public class LibraryFinder implements EntryPoint {
 		libraryFinderTable.setRowData(0,libraries);
 	}
 	
+	// REQUIRES: libraries
+	// MODIFIES: libraries
+	// EFFECTS: sort libraries by cities
 	public void sortLibraryByCity(List<Library> libraries){
 		Collections.sort(libraries, new Comparator<Library>() {
 			@Override
@@ -632,6 +646,9 @@ public class LibraryFinder implements EntryPoint {
 		});
 	}
 	
+	// REQUIRES: libraries
+	// MODIFIES: libraries
+	// EFFECTS: sort libraries by branch names
 	public void sortLibraryByName(List<Library> libraries){
 		//TODO
 		Collections.sort(libraries, new Comparator<Library>() {
