@@ -102,18 +102,10 @@ h1 {
     position: fixed;
     background-position: center; 
  	padding: 494px;  
-/* 	background-size: 1250px 700px; padding: 500px;
- */	background-size: cover;
+	background-size: cover;
  	top: 0;
 	left: 0;  
 }   
-
-/* .mainBackground {
-	background-color: #999999;
-	background-size: cover;
-	top: 0;
-	left: 0;
-} */
 
 .libraryLabel {
 	cursor: pointer;

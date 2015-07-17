@@ -235,8 +235,6 @@ public class LibraryFinder implements EntryPoint {
 		mainPanel.add(libraryFinderTableTitle); 
 		mainPanel.add(tableInstruction);
 		mainPanel.add(libraryTablePanel);
-		
-		mainPanel.setStyleName("mainBackground");
 	}
 
 	private void makeLibraryTablePanel() {
