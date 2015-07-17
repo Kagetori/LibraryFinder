@@ -43,7 +43,6 @@ public class Library implements IsSerializable {
 	public Long getId() {
 		return id;
 	}
-	
 	public String getName() {
 		return name;
 	}
@@ -80,5 +79,4 @@ public class Library implements IsSerializable {
 	public void setLatLon(LatLon latLon) {
 		this.latLon = latLon;
 	}
-	
 }

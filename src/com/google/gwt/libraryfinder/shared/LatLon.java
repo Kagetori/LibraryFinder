@@ -1,8 +1,5 @@
 package com.google.gwt.libraryfinder.shared;
 
-import java.io.Serializable;
-
-import javax.jdo.annotations.EmbeddedOnly;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;

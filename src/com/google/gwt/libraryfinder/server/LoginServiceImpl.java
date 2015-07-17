@@ -9,6 +9,9 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class LoginServiceImpl extends RemoteServiceServlet implements LoginService {
 
+	//REQUIRES: requestUri
+	//MODIFIES: nothing
+	//EFFECTS: returns the loginInfo of the current user
 	@Override
 	public LoginInfo login(String requestUri) {
 		UserService userService = UserServiceFactory.getUserService();

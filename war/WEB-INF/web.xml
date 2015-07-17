@@ -6,10 +6,6 @@
          xmlns="http://java.sun.com/xml/ns/javaee">
 
   <!-- Servlets -->
-  <servlet>
-    <servlet-name>greetServlet</servlet-name>
-    <servlet-class>com.google.gwt.libraryfinder.server.GreetingServiceImpl</servlet-class>
-  </servlet>
   
   <servlet>
     <servlet-name>libraryServlet</servlet-name>
@@ -25,11 +21,6 @@
     <servlet-name>favouriteServlet</servlet-name>
     <servlet-class>com.google.gwt.libraryfinder.server.FavoriteServiceImpl</servlet-class>
   </servlet>
-  
-  <servlet-mapping>
-    <servlet-name>greetServlet</servlet-name>
-    <url-pattern>/libraryfinder/greet</url-pattern>
-  </servlet-mapping>
   
   <servlet-mapping>
     <servlet-name>libraryServlet</servlet-name>

@@ -14,20 +14,23 @@ import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.Query;
 
 import com.google.gwt.libraryfinder.client.LibraryService;
-import com.google.gwt.libraryfinder.shared.LatLon;
 import com.google.gwt.libraryfinder.shared.Library;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class LibraryServiceImpl extends RemoteServiceServlet implements LibraryService {
 
+	private static final PersistenceManagerFactory PMF = 
+			JDOHelper.getPersistenceManagerFactory("transactions-optional");
+	
 	private List<Library> libraries = new ArrayList<Library>();
 	private LibraryParser libraryParser = new LibraryParser();
 	
-	private static final PersistenceManagerFactory PMF = 
-			JDOHelper.getPersistenceManagerFactory("transactions-optional");
-
+	//REQUIRES: nothing
+	//MODIFIES: nothing
+	//EFFECTS: gets libraries from remote server and stores them in the local server
+	@Override
 	public void getLibraries() {
-		String jsonString = queryLibrariesFromRemote(); //might take in URL string
+		String jsonString = queryLibrariesFromRemote(); 
 		parseLibraries(jsonString);
 		storeLibraries();
 	}
@@ -41,7 +44,6 @@ public class LibraryServiceImpl extends RemoteServiceServlet implements LibraryS
 			returnString = libraryParser.makeHTTPRequest();
 		} catch (IOException e) {
 			System.out.println("Invalid httpRequest");
-			e.printStackTrace();
 		}
 		return returnString;
 	}
@@ -54,7 +56,6 @@ public class LibraryServiceImpl extends RemoteServiceServlet implements LibraryS
 			libraries = libraryParser.parse(s);
 		} catch (JSONException e) {
 			System.out.println("JSONException caught");
-			e.printStackTrace();
 		}
 	}
 
@@ -78,6 +79,9 @@ public class LibraryServiceImpl extends RemoteServiceServlet implements LibraryS
 		}
 	}
 
+	//REQUIRES: nothing
+	//MODIFIES: nothing
+	//EFFECTS: returns a list of all libraries saved on web server
 	@Override
 	public List<Library> retrieveLibraries() {
 		
@@ -95,6 +99,9 @@ public class LibraryServiceImpl extends RemoteServiceServlet implements LibraryS
 		return listLibraries;
 	}
 
+	//REQUIRES: nothing
+	//MODIFIES: nothing
+	//EFFECTS: deletes all libraries saved on web server
 	@Override
 	public void deleteLibraries() {
 

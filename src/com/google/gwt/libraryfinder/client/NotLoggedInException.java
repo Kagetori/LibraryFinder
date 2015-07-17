@@ -11,5 +11,4 @@ public class NotLoggedInException extends Exception implements Serializable {
 	public NotLoggedInException(String message) {
 		super(message);
 	}
-	
 }

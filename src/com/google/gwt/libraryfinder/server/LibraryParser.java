@@ -19,7 +19,7 @@ import com.google.gwt.libraryfinder.shared.Library;
 
 public class LibraryParser {
 
-	// make a http request to get data in a string that can be made into a JSONObject
+	//EFFECTS: make a http request to get data in a string that can be made into a JSONObject
 	public String makeHTTPRequest() throws MalformedURLException, IOException {
 		String httpRequest = "http://catalogue.data.gov.bc.ca/api/action/datastore_search?resource_id=b6a28bfb-580b-4662-9f00-f7189d52fbe6&limit=250";
 		URL url = new URL(httpRequest);
@@ -28,6 +28,7 @@ public class LibraryParser {
 		BufferedReader br = new BufferedReader(new InputStreamReader(in));
 		String returnString = br.readLine();
 		client.disconnect();
+		
 		return returnString;
 	}
 
@@ -36,8 +37,6 @@ public class LibraryParser {
 	//EFFECTS: parses the string from the URL to create a new library, adds it to a list
 	//			of libraries, and return that list
 	public List<Library> parse(String returnString) throws JSONException {
-		int num = 0;
-		String s = "";
 		List<Library> libraries = new ArrayList<Library>();
 		JSONObject object = new JSONObject(returnString);
 		JSONObject result = object.getJSONObject("result");
@@ -54,9 +53,8 @@ public class LibraryParser {
 			Double lat = library.getDouble("Latitude");
 			Double lon = library.getDouble("Longitude");
 			LatLon latLon = new LatLon(lat, lon);
+			
 			Library newLibrary = new Library(name, city, address, postalCode, phone, latLon);
-			num++;
-			s = Integer.toString(num);
 			libraries.add(newLibrary);
 		}
 
